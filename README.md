@@ -1,36 +1,66 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# LifeOS
 
-## Getting Started
+LifeOS es una aplicación personal tipo “segundo cerebro”. Su promesa es simple:
+**dime lo que tienes en la cabeza y yo lo organizo**.
 
-First, run the development server:
+El desarrollo avanza por fases deliberadamente pequeñas. La Fase 1 contiene
+únicamente la base web, la navegación, una interfaz provisional y la
+configuración PWA inicial. Los datos visibles son demostrativos; todavía no hay
+base de datos ni inteligencia artificial.
+
+## Ejecutar el proyecto
+
+Necesitas Node.js 20.9 o superior.
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abre [http://localhost:3000](http://localhost:3000). Para comprobar la calidad
+técnica de esta fase:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run lint
+npx tsc --noEmit
+npm run build
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Mapa rápido
 
-## Learn More
+```text
+src/
+├── app/                    Rutas, metadatos y estilos globales
+│   ├── page.tsx            Inicio
+│   ├── chat/page.tsx       Chat provisional
+│   ├── projects/page.tsx   Proyectos provisional
+│   ├── inbox/page.tsx      Inbox provisional
+│   ├── layout.tsx          Layout raíz y metadatos
+│   ├── manifest.ts         Manifiesto instalable PWA
+│   └── globals.css         Sistema visual compartido
+└── components/             Piezas de interfaz reutilizables
+    ├── layout/              Shell y navegación responsive
+    ├── placeholder-page.tsx
+    └── pwa-registration.tsx
+public/
+└── sw.js                   Service worker básico
+docs/
+└── learning/               Explicaciones de cada fase
+```
 
-To learn more about Next.js, take a look at the following resources:
+Consulta [la guía de la Fase 1](docs/learning/phase-01-foundation.md) para
+entender cómo se conectan estas piezas y qué conviene observar antes de seguir.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Principios de arquitectura
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- La UI, el acceso a datos y la integración con IA tendrán límites claros.
+- PostgreSQL será la fuente de verdad; Gemini solo interpretará y presentará.
+- Toda acción sugerida por IA será validada en el backend.
+- El MVP se mantendrá como una sola aplicación Next.js, sin microservicios.
+- Cada fase debe conservar `lint`, TypeScript y `build` en verde.
 
-## Deploy on Vercel
+## Variables de entorno
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Copia `.env.example` como `.env.local` cuando necesites personalizar la
+configuración. Nunca guardes claves reales en Git. Las credenciales de
+PostgreSQL y Gemini se introducirán únicamente en las fases que las usan.
