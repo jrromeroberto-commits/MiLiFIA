@@ -1,0 +1,138 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ProjectStatus {
+  ACTIVE
+  PAUSED
+  COMPLETED
+  ARCHIVED
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum IdeaStatus {
+  NEW
+  EXPLORING
+  SAVED
+  DISCARDED
+  CONVERTED
+}
+
+enum InboxItemType {
+  TASK
+  PROJECT
+  IDEA
+  NOTE
+  UNKNOWN
+}
+
+model User {
+  id         String      @id @default(uuid()) @db.Uuid
+  name       String      @db.VarChar(120)
+  email      String      @unique @db.VarChar(320)
+  createdAt  DateTime    @default(now()) @db.Timestamptz(3)
+  updatedAt  DateTime    @updatedAt @db.Timestamptz(3)
+  projects   Project[]
+  tasks      Task[]
+  ideas      Idea[]
+  notes      Note[]
+  inboxItems InboxItem[]
+}
+
+model Project {
+  id          String        @id @default(uuid()) @db.Uuid
+  userId      String        @db.Uuid
+  name        String        @db.VarChar(160)
+  description String?       @db.Text
+  status      ProjectStatus @default(ACTIVE)
+  createdAt   DateTime      @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime      @updatedAt @db.Timestamptz(3)
+  archivedAt  DateTime?     @db.Timestamptz(3)
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tasks       Task[]
+  ideas       Idea[]
+  notes       Note[]
+
+  @@unique([userId, name])
+  @@index([userId, status])
+}
+
+model Task {
+  id          String       @id @default(uuid()) @db.Uuid
+  userId      String       @db.Uuid
+  projectId   String?      @db.Uuid
+  title       String       @db.VarChar(240)
+  description String?      @db.Text
+  priority    TaskPriority @default(MEDIUM)
+  status      TaskStatus   @default(TODO)
+  dueDate     DateTime?    @db.Date
+  createdAt   DateTime     @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime     @updatedAt @db.Timestamptz(3)
+  completedAt DateTime?    @db.Timestamptz(3)
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project     Project?     @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  @@index([userId, status, dueDate])
+  @@index([projectId])
+}
+
+model Idea {
+  id          String     @id @default(uuid()) @db.Uuid
+  userId      String     @db.Uuid
+  projectId   String?    @db.Uuid
+  title       String     @db.VarChar(240)
+  description String?    @db.Text
+  status      IdeaStatus @default(NEW)
+  createdAt   DateTime   @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime   @updatedAt @db.Timestamptz(3)
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project     Project?   @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  @@index([userId, status, createdAt])
+  @@index([projectId])
+}
+
+model Note {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  projectId String?  @db.Uuid
+  title     String?  @db.VarChar(240)
+  content   String   @db.Text
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  @@index([userId, updatedAt])
+  @@index([projectId])
+}
+
+model InboxItem {
+  id           String         @id @default(uuid()) @db.Uuid
+  userId       String         @db.Uuid
+  originalText String         @db.Text
+  detectedType InboxItemType?
+  processed    Boolean        @default(false)
+  createdAt    DateTime       @default(now()) @db.Timestamptz(3)
+  processedAt  DateTime?      @db.Timestamptz(3)
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, processed, createdAt])
+}
