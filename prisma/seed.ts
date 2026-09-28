@@ -13,13 +13,14 @@ const prisma = new PrismaClient({
 });
 
 async function main() {
+  const ownerEmail = process.env.LIFEOS_OWNER_EMAIL ?? "owner@lifeos.local";
   const user = await prisma.user.upsert({
-    where: { email: "owner@lifeos.local" },
+    where: { email: ownerEmail },
     update: { name: "Usuario principal" },
     create: {
       id: "00000000-0000-4000-8000-000000000001",
       name: "Usuario principal",
-      email: "owner@lifeos.local",
+      email: ownerEmail,
     },
   });
 

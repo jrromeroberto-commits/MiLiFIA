@@ -11,9 +11,23 @@ export const projectRepository = {
     return db.project.findFirst({ where: { id, userId } });
   },
 
+  findDetailById(userId: string, id: string) {
+    return db.project.findFirst({
+      where: { id, userId },
+      include: {
+        tasks: { orderBy: [{ status: "asc" }, { dueDate: "asc" }] },
+        ideas: { orderBy: { updatedAt: "desc" } },
+        notes: { orderBy: { updatedAt: "desc" } },
+      },
+    });
+  },
+
   list(userId: string) {
     return db.project.findMany({
       where: { userId },
+      include: {
+        _count: { select: { tasks: true, ideas: true, notes: true } },
+      },
       orderBy: [{ status: "asc" }, { updatedAt: "desc" }],
     });
   },

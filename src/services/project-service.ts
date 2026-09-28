@@ -35,6 +35,16 @@ export async function getProject(userId: string, projectId: string) {
   return project;
 }
 
+export async function getProjectDetail(userId: string, projectId: string) {
+  const project = await projectRepository.findDetailById(
+    entityIdSchema.parse(userId),
+    entityIdSchema.parse(projectId),
+  );
+
+  if (!project) throw new EntityNotFoundError("El proyecto");
+  return project;
+}
+
 export async function updateProject(
   userId: string,
   projectId: string,

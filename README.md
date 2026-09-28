@@ -3,10 +3,10 @@
 LifeOS es una aplicación personal tipo “segundo cerebro”. Su promesa es simple:
 **dime lo que tienes en la cabeza y yo lo organizo**.
 
-El desarrollo avanza por fases deliberadamente pequeñas. Las Fases 1 y 2
-establecen la base web y la capa de datos. Los datos visibles en la interfaz
-siguen siendo demostrativos hasta conectar la UI en la Fase 3; todavía no hay
-inteligencia artificial.
+El desarrollo avanza por fases deliberadamente pequeñas. Las Fases 1 a 3
+establecen la base web, la capa de datos y una interfaz funcional conectada a
+PostgreSQL. El chat continúa como vista provisional; todavía no hay inteligencia
+artificial.
 
 ## Ejecutar el proyecto
 
@@ -28,6 +28,7 @@ npm run lint
 npx tsc --noEmit
 npm run build
 npm run db:verify
+npm run ui:verify
 ```
 
 ## Mapa rápido
@@ -37,15 +38,18 @@ src/
 ├── app/                    Rutas, metadatos y estilos globales
 │   ├── page.tsx            Inicio
 │   ├── chat/page.tsx       Chat provisional
-│   ├── projects/page.tsx   Proyectos provisional
-│   ├── inbox/page.tsx      Inbox provisional
+│   ├── projects/page.tsx   Gestión funcional de proyectos
+│   ├── projects/[id]/      Detalle funcional de proyecto
+│   ├── inbox/page.tsx      Lista real de InboxItems
+│   ├── actions/            Mutaciones seguras de la UI
 │   ├── layout.tsx          Layout raíz y metadatos
 │   ├── manifest.ts         Manifiesto instalable PWA
 │   └── globals.css         Sistema visual compartido
 ├── components/             Piezas de interfaz reutilizables
-    ├── layout/              Shell y navegación responsive
-    ├── placeholder-page.tsx
-    └── pwa-registration.tsx
+│   ├── forms/              Feedback y estados de envío
+│   ├── layout/             Shell y navegación responsive
+│   ├── projects/           Formularios y secciones de proyecto
+│   └── ui/                 Componentes visuales compartidos
 ├── generated/prisma/       Cliente generado (ignorado por Git)
 ├── lib/
 │   ├── db/                 Cliente y repositorios de PostgreSQL
@@ -56,7 +60,8 @@ prisma/
 ├── migrations/             Historial SQL versionado
 └── seed.ts                 Usuario principal reproducible
 scripts/
-└── verify-crud.ts          Prueba integral y autolimpiable del CRUD
+├── verify-crud.ts          Prueba integral y autolimpiable del CRUD
+└── verify-ui.ts            Renderizado temporal de rutas con datos
 public/
 └── sw.js                   Service worker básico
 docs/
@@ -65,8 +70,9 @@ docs/
 
 Consulta las guías de aprendizaje de la
 [Fase 1](docs/learning/phase-01-foundation.md) y la
-[Fase 2](docs/learning/phase-02-data-layer.md) para entender cómo se conectan
-estas piezas y qué conviene observar antes de seguir.
+[Fase 2](docs/learning/phase-02-data-layer.md). La
+[Fase 3](docs/learning/phase-03-functional-ui.md) explica cómo la interfaz lee y
+modifica PostgreSQL sin exponer Prisma al navegador.
 
 ## Base de datos local
 

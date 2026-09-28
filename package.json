@@ -15,7 +15,8 @@
     "db:status": "prisma migrate status --config prisma7.config.ts",
     "db:seed": "prisma db seed --config prisma7.config.ts",
     "db:studio": "prisma studio --config prisma7.config.ts",
-    "db:verify": "tsx --conditions=react-server scripts/verify-crud.ts"
+    "db:verify": "tsx --conditions=react-server scripts/verify-crud.ts",
+    "ui:verify": "tsx --conditions=react-server scripts/verify-ui.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.10.0",
