@@ -9,6 +9,8 @@ de Gemini, un chat que ejecuta herramientas internas y una captura múltiple con
 confirmación previa. El chat responde consultas inteligentes y las revisiones
 diaria y semanal presentan métricas calculadas con datos reales de PostgreSQL.
 El chat también registra y resume gastos personales en soles con precisión decimal.
+La Fase 10 añade captura visual de pizarras, apuntes, pantallas y listas con
+confirmación humana antes de guardar.
 
 ## Ejecutar el proyecto
 
@@ -37,6 +39,7 @@ npm run brain-dump:verify
 npm run queries:verify
 npm run review:verify
 npm run expenses:verify
+npm run images:verify
 ```
 
 ## Mapa rápido
@@ -58,12 +61,12 @@ src/
 │   ├── forms/              Feedback y estados de envío
 │   ├── layout/             Shell y navegación responsive
 │   ├── projects/           Formularios y secciones de proyecto
-│   ├── chat/               Conversación, compositor y captura múltiple
+│   ├── chat/               Conversación, captura múltiple y análisis visual
 │   ├── review/             Paneles y reflexión opcional
 │   └── ui/                 Componentes visuales compartidos
 ├── generated/prisma/       Cliente generado (ignorado por Git)
 ├── lib/
-│   ├── ai/                 Gemini, intents y extracción de capturas múltiples
+│   ├── ai/                 Gemini, intents y extracción de texto e imágenes
 │   ├── db/                 Cliente y repositorios de PostgreSQL
 │   ├── time/               Reglas de calendario en America/Lima
 │   └── validation/         Contratos de entrada con Zod
@@ -81,7 +84,8 @@ scripts/
 ├── verify-brain-dump.ts    Lote confirmado y atómico con autolimpieza
 ├── verify-smart-queries.ts Cinco consultas de solo lectura y autolimpieza
 ├── verify-reviews.ts       Métricas diarias, semanales y privacidad de IA
-└── verify-expenses.ts      Importes decimales, categorías y totales SQL
+├── verify-expenses.ts      Importes decimales, categorías y totales SQL
+└── verify-image-capture.ts Imagen multimodal, firmas y contrato seguro
 public/
 └── sw.js                   Service worker básico
 docs/
@@ -104,7 +108,9 @@ natural termina en filtros y cálculos confiables sobre PostgreSQL. La
 [Fase 8](docs/learning/phase-08-reviews.md) documenta los balances diario y
 semanal, además de la reflexión opcional con métricas agregadas. La
 [Fase 9](docs/learning/phase-09-expenses.md) explica el modelo financiero, la
-precisión decimal y las agregaciones seguras en PostgreSQL.
+precisión decimal y las agregaciones seguras en PostgreSQL. La
+[Fase 10](docs/learning/phase-10-images.md) recorre la carga segura de imágenes,
+la entrada multimodal de Gemini y la confirmación antes de persistir.
 
 ## Base de datos local
 

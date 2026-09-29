@@ -290,20 +290,25 @@ export function BrainDumpDialog() {
   );
 }
 
-function DraftCard({
+export function DraftCard({
   item,
   index,
   selected,
   onToggle,
   onChange,
+  allowedTypes,
 }: {
   item: BrainDumpDraft;
   index: number;
   selected: boolean;
   onToggle: () => void;
   onChange: (change: Partial<BrainDumpDraft>) => void;
+  allowedTypes?: BrainDumpDraft["itemType"][];
 }) {
   const isUnknown = item.itemType === "UNKNOWN";
+  const visibleTypes =
+    allowedTypes ??
+    (Object.keys(typeLabels) as BrainDumpDraft["itemType"][]);
 
   return (
     <article className={`rounded-2xl border p-4 transition sm:p-5 ${selected ? "border-violet-200 bg-white shadow-sm" : "border-slate-200 bg-slate-50 opacity-75"}`}>
@@ -313,7 +318,7 @@ function DraftCard({
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">Propuesta {index + 1}</p>
             <select aria-label="Tipo de propuesta" className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 outline-none focus:border-violet-300" onChange={(event) => onChange({ itemType: event.target.value as BrainDumpDraft["itemType"] })} value={item.itemType}>
-              {Object.entries(typeLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+              {visibleTypes.map((value) => <option key={value} value={value}>{typeLabels[value]}</option>)}
             </select>
           </div>
 

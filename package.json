@@ -25,7 +25,8 @@
     "queries:verify": "tsx --conditions=react-server scripts/verify-smart-queries.ts",
     "queries:verify:live": "tsx --conditions=react-server scripts/verify-smart-queries-live.ts",
     "review:verify": "tsx --conditions=react-server scripts/verify-reviews.ts",
-    "expenses:verify": "tsx --conditions=react-server scripts/verify-expenses.ts"
+    "expenses:verify": "tsx --conditions=react-server scripts/verify-expenses.ts",
+    "images:verify": "tsx --conditions=react-server scripts/verify-image-capture.ts"
   },
   "dependencies": {
     "@google/genai": "^2.24.0",

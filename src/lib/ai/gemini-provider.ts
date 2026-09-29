@@ -32,7 +32,16 @@ export class GeminiStructuredOutputProvider implements StructuredOutputProvider 
       const interaction = await this.client.interactions.create(
         {
           model: request.model,
-          input: request.input,
+          input: request.image
+            ? [
+                { type: "text", text: request.input },
+                {
+                  type: "image",
+                  data: request.image.data,
+                  mime_type: request.image.mimeType,
+                },
+              ]
+            : request.input,
           system_instruction: request.systemInstruction,
           generation_config: {
             max_output_tokens: request.maxOutputTokens ?? 1_024,
