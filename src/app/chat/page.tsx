@@ -1,15 +1,17 @@
-import { PlaceholderPage } from "@/components/placeholder-page";
+import { ChatWorkspace } from "@/components/chat/chat-workspace";
+import { PageHeader } from "@/components/ui/page-header";
 
 export const metadata = { title: "Chat" };
 
 export default function ChatPage() {
   return (
-    <PlaceholderPage
-      eyebrow="Tu entrada principal"
-      title="¿Qué tienes en mente?"
-      description="Aquí conversarás con LifeOS para capturar tareas, proyectos, ideas y notas usando lenguaje natural."
-      preview="“Mañana tengo que revisar mi tesis y llamar a Carlos.”"
-      action={{ href: "/", label: "Volver al inicio" }}
-    />
+    <div className="space-y-7">
+      <PageHeader
+        eyebrow="Tu entrada principal"
+        title="¿Qué tienes en mente?"
+        description="Escribe como hablarías normalmente. LifeOS interpreta, verifica y organiza cada acción en tus datos reales."
+      />
+      <ChatWorkspace />
+    </div>
   );
 }

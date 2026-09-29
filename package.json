@@ -16,9 +16,13 @@
     "db:seed": "prisma db seed --config prisma7.config.ts",
     "db:studio": "prisma studio --config prisma7.config.ts",
     "db:verify": "tsx --conditions=react-server scripts/verify-crud.ts",
-    "ui:verify": "tsx --conditions=react-server scripts/verify-ui.ts"
+    "ui:verify": "tsx --conditions=react-server scripts/verify-ui.ts",
+    "ai:verify": "tsx --conditions=react-server scripts/verify-ai.ts",
+    "ai:verify:live": "tsx --conditions=react-server scripts/verify-gemini-live.ts",
+    "chat:verify": "tsx --conditions=react-server scripts/verify-chat.ts"
   },
   "dependencies": {
+    "@google/genai": "^2.24.0",
     "@prisma/adapter-pg": "^7.10.0",
     "@prisma/client": "^7.10.0",
     "dotenv": "^18.0.4",
