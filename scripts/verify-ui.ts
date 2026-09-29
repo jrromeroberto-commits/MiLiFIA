@@ -48,7 +48,9 @@ async function main() {
   await assertRoute("/projects");
   await assertRoute(`/projects/${project.id}`);
   await assertRoute("/inbox");
-  console.log("Rutas con datos reales verificadas correctamente.");
+  await assertRoute("/review/daily");
+  await assertRoute("/review/weekly");
+  console.log("Rutas con datos reales, incluidas las revisiones, verificadas correctamente.");
 }
 
 async function cleanup() {

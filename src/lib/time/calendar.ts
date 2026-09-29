@@ -20,6 +20,10 @@ export function offsetDateKey(dateKey: string, days: number) {
   return date.toISOString().slice(0, 10);
 }
 
+export function calendarDateUtc(dateKey: string) {
+  return new Date(`${dateKey}T00:00:00.000Z`);
+}
+
 export function weekRange(dateKey: string) {
   const [year, month, day] = dateKey.split("-").map(Number);
   const date = new Date(Date.UTC(year, month - 1, day));
@@ -31,3 +35,39 @@ export function weekRange(dateKey: string) {
   };
 }
 
+function timeZoneOffsetMinutes(date: Date, timeZone: string) {
+  const zoneName = new Intl.DateTimeFormat("en-US", {
+    timeZone,
+    timeZoneName: "longOffset",
+  })
+    .formatToParts(date)
+    .find((part) => part.type === "timeZoneName")?.value;
+
+  if (!zoneName || zoneName === "GMT") return 0;
+  const match = zoneName.match(/^GMT([+-])(\d{2}):?(\d{2})$/);
+  if (!match) throw new Error(`No se pudo calcular el offset de ${timeZone}.`);
+
+  const minutes = Number(match[2]) * 60 + Number(match[3]);
+  return match[1] === "+" ? minutes : -minutes;
+}
+
+export function localDateStartUtc(
+  dateKey: string,
+  timeZone: string = LIFEOS_TIME_ZONE,
+) {
+  const [year, month, day] = dateKey.split("-").map(Number);
+  const utcMidnight = Date.UTC(year, month - 1, day);
+  const offset = timeZoneOffsetMinutes(new Date(utcMidnight), timeZone);
+  return new Date(utcMidnight - offset * 60_000);
+}
+
+export function localDateRangeUtc(
+  startDateKey: string,
+  endDateKey: string,
+  timeZone: string = LIFEOS_TIME_ZONE,
+) {
+  return {
+    start: localDateStartUtc(startDateKey, timeZone),
+    endExclusive: localDateStartUtc(offsetDateKey(endDateKey, 1), timeZone),
+  };
+}

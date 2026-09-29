@@ -8,9 +8,11 @@ const navigation = [
   { href: "/chat", label: "Chat", symbol: "✦" },
   { href: "/projects", label: "Proyectos", symbol: "◫" },
   { href: "/inbox", label: "Inbox", symbol: "↓" },
+  { href: "/review/daily", label: "Revisión", symbol: "◷" },
 ];
 
 function isCurrentPath(pathname: string, href: string) {
+  if (href === "/review/daily") return pathname.startsWith("/review");
   return href === "/" ? pathname === href : pathname.startsWith(href);
 }
 
@@ -64,9 +66,9 @@ export function Navigation() {
         </nav>
 
         <div className="mt-auto rounded-2xl border border-violet-100 bg-violet-50/70 p-4">
-          <p className="text-xs font-semibold text-violet-900">Fase 1 · Base técnica</p>
+          <p className="text-xs font-semibold text-violet-900">Fase 8 · Revisiones</p>
           <p className="mt-1 text-xs leading-5 text-violet-700/70">
-            Navegación, diseño y PWA listos. Los datos aún son demostrativos.
+            Balance diario y semanal calculado desde tus datos reales.
           </p>
         </div>
       </aside>
@@ -79,12 +81,12 @@ export function Navigation() {
           <span className="font-semibold tracking-[-0.03em] text-slate-950">LifeOS</span>
         </Link>
         <span className="rounded-full bg-white/80 px-3 py-1.5 text-xs font-medium text-slate-500 shadow-sm">
-          Fase 1
+          Fase 8
         </span>
       </header>
 
       <nav
-        className="fixed inset-x-3 bottom-3 z-50 grid grid-cols-4 rounded-2xl border border-white/80 bg-slate-950/95 p-2 shadow-2xl shadow-slate-950/20 backdrop-blur-xl lg:hidden"
+        className="fixed inset-x-3 bottom-3 z-50 grid grid-cols-5 rounded-2xl border border-white/80 bg-slate-950/95 p-2 shadow-2xl shadow-slate-950/20 backdrop-blur-xl lg:hidden"
         aria-label="Navegación móvil"
       >
         {navigation.map((item) => {
@@ -92,7 +94,7 @@ export function Navigation() {
 
           return (
             <Link
-              className={`flex min-h-12 flex-col items-center justify-center gap-0.5 rounded-xl text-[0.68rem] font-medium transition ${
+              className={`flex min-h-12 flex-col items-center justify-center gap-0.5 rounded-xl text-[0.62rem] font-medium transition sm:text-[0.68rem] ${
                 active ? "bg-white/10 text-white" : "text-slate-400"
               }`}
               href={item.href}

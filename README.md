@@ -3,11 +3,11 @@
 LifeOS es una aplicación personal tipo “segundo cerebro”. Su promesa es simple:
 **dime lo que tienes en la cabeza y yo lo organizo**.
 
-El desarrollo avanza por fases deliberadamente pequeñas. Las Fases 1 a 7
+El desarrollo avanza por fases deliberadamente pequeñas. Las Fases 1 a 8
 establecen la base web, la capa de datos, una interfaz funcional, el intérprete
 de Gemini, un chat que ejecuta herramientas internas y una captura múltiple con
-confirmación previa. El chat también responde consultas inteligentes calculadas
-con datos reales de PostgreSQL.
+confirmación previa. El chat responde consultas inteligentes y las revisiones
+diaria y semanal presentan métricas calculadas con datos reales de PostgreSQL.
 
 ## Ejecutar el proyecto
 
@@ -34,6 +34,7 @@ npm run ai:verify
 npm run chat:verify
 npm run brain-dump:verify
 npm run queries:verify
+npm run review:verify
 ```
 
 ## Mapa rápido
@@ -46,6 +47,7 @@ src/
 │   ├── projects/page.tsx   Gestión funcional de proyectos
 │   ├── projects/[id]/      Detalle funcional de proyecto
 │   ├── inbox/page.tsx      Lista real de InboxItems
+│   ├── review/              Revisión diaria y semanal
 │   ├── actions/            Mutaciones seguras, incluido el chat
 │   ├── layout.tsx          Layout raíz y metadatos
 │   ├── manifest.ts         Manifiesto instalable PWA
@@ -55,6 +57,7 @@ src/
 │   ├── layout/             Shell y navegación responsive
 │   ├── projects/           Formularios y secciones de proyecto
 │   ├── chat/               Conversación, compositor y captura múltiple
+│   ├── review/             Paneles y reflexión opcional
 │   └── ui/                 Componentes visuales compartidos
 ├── generated/prisma/       Cliente generado (ignorado por Git)
 ├── lib/
@@ -74,7 +77,8 @@ scripts/
 ├── verify-gemini-live.ts   Consulta real opcional a Gemini
 ├── verify-chat.ts          Ocho intents contra PostgreSQL y autolimpieza
 ├── verify-brain-dump.ts    Lote confirmado y atómico con autolimpieza
-└── verify-smart-queries.ts Cinco consultas de solo lectura y autolimpieza
+├── verify-smart-queries.ts Cinco consultas de solo lectura y autolimpieza
+└── verify-reviews.ts       Métricas diarias, semanales y privacidad de IA
 public/
 └── sw.js                   Service worker básico
 docs/
@@ -93,7 +97,9 @@ intención validada en una herramienta segura y una respuesta conversacional. La
 [Fase 6](docs/learning/phase-06-brain-dump.md) recorre la captura múltiple, la
 pantalla de confirmación y el guardado transaccional. La
 [Fase 7](docs/learning/phase-07-intelligent-queries.md) explica cómo una pregunta
-natural termina en filtros y cálculos confiables sobre PostgreSQL.
+natural termina en filtros y cálculos confiables sobre PostgreSQL. La
+[Fase 8](docs/learning/phase-08-reviews.md) documenta los balances diario y
+semanal, además de la reflexión opcional con métricas agregadas.
 
 ## Base de datos local
 
