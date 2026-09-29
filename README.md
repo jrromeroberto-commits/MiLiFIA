@@ -9,8 +9,9 @@ de Gemini, un chat que ejecuta herramientas internas y una captura múltiple con
 confirmación previa. El chat responde consultas inteligentes y las revisiones
 diaria y semanal presentan métricas calculadas con datos reales de PostgreSQL.
 El chat también registra y resume gastos personales en soles con precisión decimal.
-La Fase 10 añade captura visual de pizarras, apuntes, pantallas y listas con
-confirmación humana antes de guardar.
+La Fase 10 añade captura visual de pizarras, apuntes, pantallas y listas. La
+Fase 11 permite grabar o subir audio, revisar su transcripción y confirmar cada
+acción antes de guardar.
 
 ## Ejecutar el proyecto
 
@@ -40,6 +41,7 @@ npm run queries:verify
 npm run review:verify
 npm run expenses:verify
 npm run images:verify
+npm run audio:verify
 ```
 
 ## Mapa rápido
@@ -61,7 +63,7 @@ src/
 │   ├── forms/              Feedback y estados de envío
 │   ├── layout/             Shell y navegación responsive
 │   ├── projects/           Formularios y secciones de proyecto
-│   ├── chat/               Conversación, captura múltiple y análisis visual
+│   ├── chat/               Conversación y capturas de texto, imagen y audio
 │   ├── review/             Paneles y reflexión opcional
 │   └── ui/                 Componentes visuales compartidos
 ├── generated/prisma/       Cliente generado (ignorado por Git)
@@ -85,7 +87,8 @@ scripts/
 ├── verify-smart-queries.ts Cinco consultas de solo lectura y autolimpieza
 ├── verify-reviews.ts       Métricas diarias, semanales y privacidad de IA
 ├── verify-expenses.ts      Importes decimales, categorías y totales SQL
-└── verify-image-capture.ts Imagen multimodal, firmas y contrato seguro
+├── verify-image-capture.ts Imagen multimodal, firmas y contrato seguro
+└── verify-audio-capture.ts Audio multimodal, transcripción y formatos
 public/
 └── sw.js                   Service worker básico
 docs/
@@ -110,7 +113,9 @@ semanal, además de la reflexión opcional con métricas agregadas. La
 [Fase 9](docs/learning/phase-09-expenses.md) explica el modelo financiero, la
 precisión decimal y las agregaciones seguras en PostgreSQL. La
 [Fase 10](docs/learning/phase-10-images.md) recorre la carga segura de imágenes,
-la entrada multimodal de Gemini y la confirmación antes de persistir.
+la entrada multimodal de Gemini y la confirmación antes de persistir. La
+[Fase 11](docs/learning/phase-11-audio.md) explica la grabación adaptable, la
+validación de audios y la revisión de la transcripción.
 
 ## Base de datos local
 

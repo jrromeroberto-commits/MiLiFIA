@@ -6,6 +6,15 @@ export type StructuredOutputRequest = {
     data: string;
     mimeType: "image/jpeg" | "image/png" | "image/webp";
   };
+  audio?: {
+    data: string;
+    mimeType:
+      | "audio/webm"
+      | "audio/wav"
+      | "audio/mpeg"
+      | "audio/m4a"
+      | "audio/ogg";
+  };
   jsonSchema: Record<string, unknown>;
   maxOutputTokens?: number;
 };

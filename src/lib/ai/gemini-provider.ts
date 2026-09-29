@@ -29,19 +29,37 @@ export class GeminiStructuredOutputProvider implements StructuredOutputProvider 
 
   async generateStructuredOutput(request: StructuredOutputRequest) {
     try {
+      if (request.image && request.audio) {
+        throw new AiServiceError(
+          "La solicitud estructurada solo admite un archivo multimedia.",
+          { code: "CONFIGURATION" },
+        );
+      }
+
+      const input = request.image
+        ? [
+            { type: "text" as const, text: request.input },
+            {
+              type: "image" as const,
+              data: request.image.data,
+              mime_type: request.image.mimeType,
+            },
+          ]
+        : request.audio
+          ? [
+              { type: "text" as const, text: request.input },
+              {
+                type: "audio" as const,
+                data: request.audio.data,
+                mime_type: request.audio.mimeType,
+              },
+            ]
+          : request.input;
+
       const interaction = await this.client.interactions.create(
         {
           model: request.model,
-          input: request.image
-            ? [
-                { type: "text", text: request.input },
-                {
-                  type: "image",
-                  data: request.image.data,
-                  mime_type: request.image.mimeType,
-                },
-              ]
-            : request.input,
+          input,
           system_instruction: request.systemInstruction,
           generation_config: {
             max_output_tokens: request.maxOutputTokens ?? 1_024,

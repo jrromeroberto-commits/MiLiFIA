@@ -47,8 +47,8 @@ Servicio transaccional de la Fase 6 guarda los elementos elegidos
 - `src/lib/ai/gemini-provider.ts`: transforma ese contrato en una entrada
   multimodal de la API de Gemini.
 - `src/services/brain-dump-service.ts`: guardado final ya probado en la Fase 6.
-- `next.config.ts`: permite hasta 6 MB en el cuerpo HTTP para dejar margen al
-  multipart, manteniendo el límite del archivo en 5 MB.
+- `next.config.ts`: permite hasta 11 MB en el cuerpo HTTP para las capturas
+  multimedia, manteniendo el límite propio de las imágenes en 5 MB.
 
 ## Por qué hay dos validaciones del archivo
 
