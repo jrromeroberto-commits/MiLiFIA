@@ -35,6 +35,15 @@ export function weekRange(dateKey: string) {
   };
 }
 
+export function monthRange(dateKey: string) {
+  const [year, month] = dateKey.split("-").map(Number);
+  const end = new Date(Date.UTC(year, month, 0)).toISOString().slice(0, 10);
+  return {
+    start: `${year.toString().padStart(4, "0")}-${month.toString().padStart(2, "0")}-01`,
+    end,
+  };
+}
+
 function timeZoneOffsetMinutes(date: Date, timeZone: string) {
   const zoneName = new Intl.DateTimeFormat("en-US", {
     timeZone,

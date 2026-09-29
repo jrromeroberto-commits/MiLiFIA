@@ -43,6 +43,19 @@ enum InboxItemType {
   UNKNOWN
 }
 
+enum ExpenseCategory {
+  FOOD
+  TRANSPORT
+  HOUSING
+  SERVICES
+  SOFTWARE
+  HEALTH
+  EDUCATION
+  ENTERTAINMENT
+  SHOPPING
+  OTHER
+}
+
 model User {
   id         String      @id @default(uuid()) @db.Uuid
   name       String      @db.VarChar(120)
@@ -53,6 +66,7 @@ model User {
   tasks      Task[]
   ideas      Idea[]
   notes      Note[]
+  expenses   Expense[]
   inboxItems InboxItem[]
 }
 
@@ -69,6 +83,7 @@ model Project {
   tasks       Task[]
   ideas       Idea[]
   notes       Note[]
+  expenses    Expense[]
 
   @@unique([userId, name])
   @@index([userId, status])
@@ -135,4 +150,23 @@ model InboxItem {
   user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, processed, createdAt])
+}
+
+model Expense {
+  id          String          @id @default(uuid()) @db.Uuid
+  userId      String          @db.Uuid
+  projectId   String?         @db.Uuid
+  amount      Decimal         @db.Decimal(12, 2)
+  currency    String          @default("PEN") @db.Char(3)
+  description String          @db.VarChar(240)
+  category    ExpenseCategory
+  date        DateTime        @db.Date
+  createdAt   DateTime        @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime        @updatedAt @db.Timestamptz(3)
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project     Project?        @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  @@index([userId, date])
+  @@index([userId, category, date])
+  @@index([projectId])
 }

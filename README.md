@@ -3,11 +3,12 @@
 LifeOS es una aplicación personal tipo “segundo cerebro”. Su promesa es simple:
 **dime lo que tienes en la cabeza y yo lo organizo**.
 
-El desarrollo avanza por fases deliberadamente pequeñas. Las Fases 1 a 8
+El desarrollo avanza por fases deliberadamente pequeñas. Las Fases 1 a 9
 establecen la base web, la capa de datos, una interfaz funcional, el intérprete
 de Gemini, un chat que ejecuta herramientas internas y una captura múltiple con
 confirmación previa. El chat responde consultas inteligentes y las revisiones
 diaria y semanal presentan métricas calculadas con datos reales de PostgreSQL.
+El chat también registra y resume gastos personales en soles con precisión decimal.
 
 ## Ejecutar el proyecto
 
@@ -35,6 +36,7 @@ npm run chat:verify
 npm run brain-dump:verify
 npm run queries:verify
 npm run review:verify
+npm run expenses:verify
 ```
 
 ## Mapa rápido
@@ -65,7 +67,7 @@ src/
 │   ├── db/                 Cliente y repositorios de PostgreSQL
 │   ├── time/               Reglas de calendario en America/Lima
 │   └── validation/         Contratos de entrada con Zod
-└── services/               Reglas de negocio, consultas y aislamiento por usuario
+└── services/               Reglas de negocio, consultas, gastos y aislamiento por usuario
 prisma/
 ├── schema.prisma           Modelos y relaciones
 ├── migrations/             Historial SQL versionado
@@ -78,7 +80,8 @@ scripts/
 ├── verify-chat.ts          Ocho intents contra PostgreSQL y autolimpieza
 ├── verify-brain-dump.ts    Lote confirmado y atómico con autolimpieza
 ├── verify-smart-queries.ts Cinco consultas de solo lectura y autolimpieza
-└── verify-reviews.ts       Métricas diarias, semanales y privacidad de IA
+├── verify-reviews.ts       Métricas diarias, semanales y privacidad de IA
+└── verify-expenses.ts      Importes decimales, categorías y totales SQL
 public/
 └── sw.js                   Service worker básico
 docs/
@@ -99,7 +102,9 @@ pantalla de confirmación y el guardado transaccional. La
 [Fase 7](docs/learning/phase-07-intelligent-queries.md) explica cómo una pregunta
 natural termina en filtros y cálculos confiables sobre PostgreSQL. La
 [Fase 8](docs/learning/phase-08-reviews.md) documenta los balances diario y
-semanal, además de la reflexión opcional con métricas agregadas.
+semanal, además de la reflexión opcional con métricas agregadas. La
+[Fase 9](docs/learning/phase-09-expenses.md) explica el modelo financiero, la
+precisión decimal y las agregaciones seguras en PostgreSQL.
 
 ## Base de datos local
 

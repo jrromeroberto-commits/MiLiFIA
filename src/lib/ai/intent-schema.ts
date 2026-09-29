@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { expenseAmountSchema } from "@/lib/validation/expense";
 
 export const lifeOSIntentNameSchema = z.enum([
   "create_task",
@@ -9,6 +10,8 @@ export const lifeOSIntentNameSchema = z.enum([
   "list_projects",
   "list_ideas",
   "get_project_activity",
+  "create_expense",
+  "summarize_expenses",
   "complete_task",
   "unknown",
 ]);
@@ -48,6 +51,27 @@ export const rawIntentResponseSchema = z
     projectStatus: z
       .enum(["ACTIVE", "PAUSED", "COMPLETED", "ARCHIVED", "ALL"])
       .nullable(),
+    amount: expenseAmountSchema.nullable(),
+    currency: z.literal("PEN").nullable(),
+    expenseCategory: z
+      .enum([
+        "FOOD",
+        "TRANSPORT",
+        "HOUSING",
+        "SERVICES",
+        "SOFTWARE",
+        "HEALTH",
+        "EDUCATION",
+        "ENTERTAINMENT",
+        "SHOPPING",
+        "OTHER",
+      ])
+      .nullable(),
+    expenseDate: isoDateSchema.nullable(),
+    expenseTimeframe: z
+      .enum(["TODAY", "THIS_WEEK", "THIS_MONTH", "ALL"])
+      .nullable(),
+    expenseAggregation: z.enum(["TOTAL", "BY_CATEGORY"]).nullable(),
     clarificationQuestion: clarificationQuestionSchema,
   })
   .strict();
@@ -132,6 +156,42 @@ const getProjectActivityIntentSchema = z
   })
   .strict();
 
+const expenseCategorySchema = z.enum([
+  "FOOD",
+  "TRANSPORT",
+  "HOUSING",
+  "SERVICES",
+  "SOFTWARE",
+  "HEALTH",
+  "EDUCATION",
+  "ENTERTAINMENT",
+  "SHOPPING",
+  "OTHER",
+]);
+
+const createExpenseIntentSchema = z
+  .object({
+    intent: z.literal("create_expense"),
+    amount: expenseAmountSchema,
+    currency: z.literal("PEN"),
+    description: z.string().trim().min(1).max(240),
+    expenseCategory: expenseCategorySchema,
+    expenseDate: isoDateSchema,
+    projectName: nullableProjectNameSchema,
+    clarificationQuestion: clarificationQuestionSchema,
+  })
+  .strict();
+
+const summarizeExpensesIntentSchema = z
+  .object({
+    intent: z.literal("summarize_expenses"),
+    expenseTimeframe: z.enum(["TODAY", "THIS_WEEK", "THIS_MONTH", "ALL"]),
+    expenseAggregation: z.enum(["TOTAL", "BY_CATEGORY"]),
+    projectName: nullableProjectNameSchema,
+    clarificationQuestion: clarificationQuestionSchema,
+  })
+  .strict();
+
 const completeTaskIntentSchema = z
   .object({
     intent: z.literal("complete_task"),
@@ -157,6 +217,8 @@ export const lifeOSIntentSchema = z.discriminatedUnion("intent", [
   listProjectsIntentSchema,
   listIdeasIntentSchema,
   getProjectActivityIntentSchema,
+  createExpenseIntentSchema,
+  summarizeExpensesIntentSchema,
   completeTaskIntentSchema,
   unknownIntentSchema,
 ]);
@@ -223,6 +285,25 @@ export function toLifeOSIntent(raw: RawIntentResponse): LifeOSIntent {
     case "get_project_activity":
       return lifeOSIntentSchema.parse({
         intent: raw.intent,
+        projectName: raw.projectName,
+        clarificationQuestion: raw.clarificationQuestion,
+      });
+    case "create_expense":
+      return lifeOSIntentSchema.parse({
+        intent: raw.intent,
+        amount: raw.amount,
+        currency: raw.currency,
+        description: raw.description,
+        expenseCategory: raw.expenseCategory,
+        expenseDate: raw.expenseDate,
+        projectName: raw.projectName,
+        clarificationQuestion: raw.clarificationQuestion,
+      });
+    case "summarize_expenses":
+      return lifeOSIntentSchema.parse({
+        intent: raw.intent,
+        expenseTimeframe: raw.expenseTimeframe,
+        expenseAggregation: raw.expenseAggregation,
         projectName: raw.projectName,
         clarificationQuestion: raw.clarificationQuestion,
       });

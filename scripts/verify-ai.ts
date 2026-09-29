@@ -21,6 +21,12 @@ const emptyResponse = {
   taskStatus: null,
   timeframe: null,
   projectStatus: null,
+  amount: null,
+  currency: null,
+  expenseCategory: null,
+  expenseDate: null,
+  expenseTimeframe: null,
+  expenseAggregation: null,
   clarificationQuestion: null,
 };
 
@@ -101,6 +107,27 @@ const fixtures = [
   {
     response: {
       ...emptyResponse,
+      intent: "create_expense",
+      amount: 35,
+      currency: "PEN",
+      description: "Almuerzo",
+      expenseCategory: "FOOD",
+      expenseDate: "2026-09-28",
+    },
+    intent: "create_expense",
+  },
+  {
+    response: {
+      ...emptyResponse,
+      intent: "summarize_expenses",
+      expenseTimeframe: "THIS_MONTH",
+      expenseAggregation: "BY_CATEGORY",
+    },
+    intent: "summarize_expenses",
+  },
+  {
+    response: {
+      ...emptyResponse,
       intent: "complete_task",
       title: "Revisar login",
     },
@@ -175,5 +202,5 @@ assert.throws(
 );
 
 console.log(
-  "Capa de IA verificada: 10 intents válidos y respuestas inseguras rechazadas.",
+  "Capa de IA verificada: 12 intents válidos y respuestas inseguras rechazadas.",
 );

@@ -27,6 +27,8 @@ const suggestions = [
   "¿Qué proyectos tengo activos?",
   "¿Qué ideas guardé esta semana?",
   "¿Cuándo fue la última vez que avancé LifeOS?",
+  "Gasté 35 soles en almuerzo",
+  "¿En qué gasté más este mes?",
 ];
 
 const intentLabels: Record<string, string> = {
@@ -38,6 +40,8 @@ const intentLabels: Record<string, string> = {
   list_projects: "Consultar proyectos",
   list_ideas: "Consultar ideas",
   get_project_activity: "Consultar actividad",
+  create_expense: "Registrar gasto",
+  summarize_expenses: "Consultar gastos",
   complete_task: "Completar tarea",
   unknown: "Necesita contexto",
 };
