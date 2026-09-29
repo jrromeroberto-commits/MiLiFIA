@@ -9,6 +9,7 @@ import {
 } from "@/lib/time/calendar";
 import { createIdea } from "@/services/idea-service";
 import { executeExpenseIntent } from "@/services/expense-tool-service";
+import { executeGrowthIntent } from "@/services/growth-tool-service";
 import { executeIntelligentQuery } from "@/services/intelligent-query-tool-service";
 import { createNote } from "@/services/note-service";
 import { createProject, listProjects } from "@/services/project-service";
@@ -402,6 +403,10 @@ export async function executeLifeOSIntent(userId: string, intent: LifeOSIntent) 
       return executeExpenseIntent(userId, intent);
     case "summarize_expenses":
       return executeExpenseIntent(userId, intent);
+    case "create_habit":
+    case "log_habit":
+    case "create_goal":
+      return executeGrowthIntent(userId, intent);
     case "complete_task":
       return executeCompleteTask(userId, intent);
     case "unknown":

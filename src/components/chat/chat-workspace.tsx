@@ -29,6 +29,9 @@ const suggestions = [
   "¿Cuándo fue la última vez que avancé LifeOS?",
   "Gasté 35 soles en almuerzo",
   "¿En qué gasté más este mes?",
+  "Quiero estudiar inglés cuatro veces por semana",
+  "Hoy caminé 40 minutos",
+  "Mi meta es terminar LifeOS este mes",
 ];
 
 const intentLabels: Record<string, string> = {
@@ -42,6 +45,9 @@ const intentLabels: Record<string, string> = {
   get_project_activity: "Consultar actividad",
   create_expense: "Registrar gasto",
   summarize_expenses: "Consultar gastos",
+  create_habit: "Crear hábito",
+  log_habit: "Registrar hábito",
+  create_goal: "Crear meta",
   complete_task: "Completar tarea",
   unknown: "Necesita contexto",
 };
@@ -51,7 +57,7 @@ const initialMessages: ChatMessage[] = [
     id: 0,
     role: "assistant",
     content:
-      "Cuéntame qué tienes en mente. Puedo organizar acciones y responder preguntas sobre tus tareas, proyectos, ideas y actividad reciente.",
+      "Cuéntame qué tienes en mente. Puedo organizar acciones, hábitos y metas, además de responder preguntas sobre tus datos reales.",
   },
 ];
 

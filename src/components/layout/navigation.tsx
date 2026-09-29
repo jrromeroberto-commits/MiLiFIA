@@ -9,6 +9,7 @@ const navigation = [
   { href: "/projects", label: "Proyectos", symbol: "◫" },
   { href: "/inbox", label: "Inbox", symbol: "↓" },
   { href: "/review/daily", label: "Revisión", symbol: "◷" },
+  { href: "/growth", label: "Crecimiento", symbol: "↗" },
 ];
 
 function isCurrentPath(pathname: string, href: string) {
@@ -66,9 +67,9 @@ export function Navigation() {
         </nav>
 
         <div className="mt-auto rounded-2xl border border-violet-100 bg-violet-50/70 p-4">
-          <p className="text-xs font-semibold text-violet-900">Fase 8 · Revisiones</p>
+          <p className="text-xs font-semibold text-violet-900">Fase 12 · Crecimiento</p>
           <p className="mt-1 text-xs leading-5 text-violet-700/70">
-            Balance diario y semanal calculado desde tus datos reales.
+            Hábitos, metas y progreso calculados desde tus datos reales.
           </p>
         </div>
       </aside>
@@ -81,12 +82,12 @@ export function Navigation() {
           <span className="font-semibold tracking-[-0.03em] text-slate-950">LifeOS</span>
         </Link>
         <span className="rounded-full bg-white/80 px-3 py-1.5 text-xs font-medium text-slate-500 shadow-sm">
-          Fase 8
+          Fase 12
         </span>
       </header>
 
       <nav
-        className="fixed inset-x-3 bottom-3 z-50 grid grid-cols-5 rounded-2xl border border-white/80 bg-slate-950/95 p-2 shadow-2xl shadow-slate-950/20 backdrop-blur-xl lg:hidden"
+        className="fixed inset-x-3 bottom-3 z-50 grid grid-cols-6 rounded-2xl border border-white/80 bg-slate-950/95 p-2 shadow-2xl shadow-slate-950/20 backdrop-blur-xl lg:hidden"
         aria-label="Navegación móvil"
       >
         {navigation.map((item) => {

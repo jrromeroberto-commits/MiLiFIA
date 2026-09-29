@@ -50,6 +50,7 @@ async function main() {
   await assertRoute("/inbox");
   await assertRoute("/review/daily");
   await assertRoute("/review/weekly");
+  await assertRoute("/growth");
   console.log("Rutas con datos reales, incluidas las revisiones, verificadas correctamente.");
 }
 

@@ -12,6 +12,9 @@ export const lifeOSIntentNameSchema = z.enum([
   "get_project_activity",
   "create_expense",
   "summarize_expenses",
+  "create_habit",
+  "log_habit",
+  "create_goal",
   "complete_task",
   "unknown",
 ]);
@@ -72,6 +75,16 @@ export const rawIntentResponseSchema = z
       .enum(["TODAY", "THIS_WEEK", "THIS_MONTH", "ALL"])
       .nullable(),
     expenseAggregation: z.enum(["TOTAL", "BY_CATEGORY"]).nullable(),
+    habitName: z.string().trim().min(1).max(160).nullable(),
+    habitFrequency: z.enum(["DAILY", "WEEKLY"]).nullable(),
+    habitTargetCount: z.number().int().min(1).max(365).nullable(),
+    habitValue: z.number().positive().max(1_000_000).nullable(),
+    habitUnit: z
+      .enum(["SESSIONS", "MINUTES", "HOURS", "KILOMETERS", "PAGES"])
+      .nullable(),
+    habitDate: isoDateSchema.nullable(),
+    goalTitle: z.string().trim().min(1).max(240).nullable(),
+    goalTargetDate: isoDateSchema.nullable(),
     clarificationQuestion: clarificationQuestionSchema,
   })
   .strict();
@@ -192,6 +205,47 @@ const summarizeExpensesIntentSchema = z
   })
   .strict();
 
+const habitUnitSchema = z.enum([
+  "SESSIONS",
+  "MINUTES",
+  "HOURS",
+  "KILOMETERS",
+  "PAGES",
+]);
+
+const createHabitIntentSchema = z
+  .object({
+    intent: z.literal("create_habit"),
+    habitName: z.string().trim().min(1).max(160),
+    description: nullableDescriptionSchema,
+    habitFrequency: z.enum(["DAILY", "WEEKLY"]),
+    habitTargetCount: z.number().int().min(1).max(365),
+    habitUnit: habitUnitSchema,
+    clarificationQuestion: clarificationQuestionSchema,
+  })
+  .strict();
+
+const logHabitIntentSchema = z
+  .object({
+    intent: z.literal("log_habit"),
+    habitName: z.string().trim().min(1).max(160),
+    habitValue: z.number().positive().max(1_000_000),
+    habitUnit: habitUnitSchema,
+    habitDate: isoDateSchema,
+    clarificationQuestion: clarificationQuestionSchema,
+  })
+  .strict();
+
+const createGoalIntentSchema = z
+  .object({
+    intent: z.literal("create_goal"),
+    goalTitle: z.string().trim().min(1).max(240),
+    description: nullableDescriptionSchema,
+    goalTargetDate: isoDateSchema.nullable(),
+    clarificationQuestion: clarificationQuestionSchema,
+  })
+  .strict();
+
 const completeTaskIntentSchema = z
   .object({
     intent: z.literal("complete_task"),
@@ -219,6 +273,9 @@ export const lifeOSIntentSchema = z.discriminatedUnion("intent", [
   getProjectActivityIntentSchema,
   createExpenseIntentSchema,
   summarizeExpensesIntentSchema,
+  createHabitIntentSchema,
+  logHabitIntentSchema,
+  createGoalIntentSchema,
   completeTaskIntentSchema,
   unknownIntentSchema,
 ]);
@@ -305,6 +362,33 @@ export function toLifeOSIntent(raw: RawIntentResponse): LifeOSIntent {
         expenseTimeframe: raw.expenseTimeframe,
         expenseAggregation: raw.expenseAggregation,
         projectName: raw.projectName,
+        clarificationQuestion: raw.clarificationQuestion,
+      });
+    case "create_habit":
+      return lifeOSIntentSchema.parse({
+        intent: raw.intent,
+        habitName: raw.habitName,
+        description: raw.description,
+        habitFrequency: raw.habitFrequency,
+        habitTargetCount: raw.habitTargetCount,
+        habitUnit: raw.habitUnit,
+        clarificationQuestion: raw.clarificationQuestion,
+      });
+    case "log_habit":
+      return lifeOSIntentSchema.parse({
+        intent: raw.intent,
+        habitName: raw.habitName,
+        habitValue: raw.habitValue,
+        habitUnit: raw.habitUnit,
+        habitDate: raw.habitDate,
+        clarificationQuestion: raw.clarificationQuestion,
+      });
+    case "create_goal":
+      return lifeOSIntentSchema.parse({
+        intent: raw.intent,
+        goalTitle: raw.goalTitle,
+        description: raw.description,
+        goalTargetDate: raw.goalTargetDate,
         clarificationQuestion: raw.clarificationQuestion,
       });
     case "complete_task":

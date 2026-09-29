@@ -11,7 +11,8 @@ diaria y semanal presentan métricas calculadas con datos reales de PostgreSQL.
 El chat también registra y resume gastos personales en soles con precisión decimal.
 La Fase 10 añade captura visual de pizarras, apuntes, pantallas y listas. La
 Fase 11 permite grabar o subir audio, revisar su transcripción y confirmar cada
-acción antes de guardar.
+acción antes de guardar. La Fase 12 incorpora hábitos, metas y estadísticas
+semanales calculadas por el backend.
 
 ## Ejecutar el proyecto
 
@@ -42,6 +43,7 @@ npm run review:verify
 npm run expenses:verify
 npm run images:verify
 npm run audio:verify
+npm run growth:verify
 ```
 
 ## Mapa rápido
@@ -55,6 +57,7 @@ src/
 │   ├── projects/[id]/      Detalle funcional de proyecto
 │   ├── inbox/page.tsx      Lista real de InboxItems
 │   ├── review/              Revisión diaria y semanal
+│   ├── growth/page.tsx     Hábitos, metas y progreso semanal
 │   ├── actions/            Mutaciones seguras, incluido el chat
 │   ├── layout.tsx          Layout raíz y metadatos
 │   ├── manifest.ts         Manifiesto instalable PWA
@@ -65,6 +68,7 @@ src/
 │   ├── projects/           Formularios y secciones de proyecto
 │   ├── chat/               Conversación y capturas de texto, imagen y audio
 │   ├── review/             Paneles y reflexión opcional
+│   ├── growth/             Panel de hábitos y metas
 │   └── ui/                 Componentes visuales compartidos
 ├── generated/prisma/       Cliente generado (ignorado por Git)
 ├── lib/
@@ -72,7 +76,7 @@ src/
 │   ├── db/                 Cliente y repositorios de PostgreSQL
 │   ├── time/               Reglas de calendario en America/Lima
 │   └── validation/         Contratos de entrada con Zod
-└── services/               Reglas de negocio, consultas, gastos y aislamiento por usuario
+└── services/               Negocio, consultas, gastos, crecimiento y aislamiento
 prisma/
 ├── schema.prisma           Modelos y relaciones
 ├── migrations/             Historial SQL versionado
@@ -88,7 +92,8 @@ scripts/
 ├── verify-reviews.ts       Métricas diarias, semanales y privacidad de IA
 ├── verify-expenses.ts      Importes decimales, categorías y totales SQL
 ├── verify-image-capture.ts Imagen multimodal, firmas y contrato seguro
-└── verify-audio-capture.ts Audio multimodal, transcripción y formatos
+├── verify-audio-capture.ts Audio multimodal, transcripción y formatos
+└── verify-growth.ts        Hábitos, metas y estadísticas autolimpiables
 public/
 └── sw.js                   Service worker básico
 docs/
@@ -115,7 +120,9 @@ precisión decimal y las agregaciones seguras en PostgreSQL. La
 [Fase 10](docs/learning/phase-10-images.md) recorre la carga segura de imágenes,
 la entrada multimodal de Gemini y la confirmación antes de persistir. La
 [Fase 11](docs/learning/phase-11-audio.md) explica la grabación adaptable, la
-validación de audios y la revisión de la transcripción.
+validación de audios y la revisión de la transcripción. La
+[Fase 12](docs/learning/phase-12-growth.md) documenta los modelos de crecimiento,
+las nuevas intenciones y las estadísticas calculadas en el backend.
 
 ## Base de datos local
 

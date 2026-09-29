@@ -27,6 +27,14 @@ const emptyResponse = {
   expenseDate: null,
   expenseTimeframe: null,
   expenseAggregation: null,
+  habitName: null,
+  habitFrequency: null,
+  habitTargetCount: null,
+  habitValue: null,
+  habitUnit: null,
+  habitDate: null,
+  goalTitle: null,
+  goalTargetDate: null,
   clarificationQuestion: null,
 };
 
@@ -42,6 +50,37 @@ class FakeIntentProvider implements StructuredOutputProvider {
 }
 
 const fixtures = [
+  {
+    response: {
+      ...emptyResponse,
+      intent: "create_habit",
+      habitName: "Estudiar inglés",
+      habitFrequency: "WEEKLY",
+      habitTargetCount: 4,
+      habitUnit: "SESSIONS",
+    },
+    intent: "create_habit",
+  },
+  {
+    response: {
+      ...emptyResponse,
+      intent: "log_habit",
+      habitName: "Caminar",
+      habitValue: 40,
+      habitUnit: "MINUTES",
+      habitDate: "2026-09-28",
+    },
+    intent: "log_habit",
+  },
+  {
+    response: {
+      ...emptyResponse,
+      intent: "create_goal",
+      goalTitle: "Terminar LifeOS",
+      goalTargetDate: "2026-09-30",
+    },
+    intent: "create_goal",
+  },
   {
     response: {
       ...emptyResponse,
@@ -202,5 +241,5 @@ assert.throws(
 );
 
 console.log(
-  "Capa de IA verificada: 12 intents válidos y respuestas inseguras rechazadas.",
+  "Capa de IA verificada: 15 intents válidos y respuestas inseguras rechazadas.",
 );

@@ -27,7 +27,8 @@
     "review:verify": "tsx --conditions=react-server scripts/verify-reviews.ts",
     "expenses:verify": "tsx --conditions=react-server scripts/verify-expenses.ts",
     "images:verify": "tsx --conditions=react-server scripts/verify-image-capture.ts",
-    "audio:verify": "tsx --conditions=react-server scripts/verify-audio-capture.ts"
+    "audio:verify": "tsx --conditions=react-server scripts/verify-audio-capture.ts",
+    "growth:verify": "tsx --conditions=react-server scripts/verify-growth.ts"
   },
   "dependencies": {
     "@google/genai": "^2.24.0",

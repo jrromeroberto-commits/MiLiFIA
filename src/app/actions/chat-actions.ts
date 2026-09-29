@@ -53,6 +53,7 @@ export async function sendChatMessageAction(
       revalidatePath("/");
       revalidatePath("/projects");
       revalidatePath("/inbox");
+      revalidatePath("/growth");
     }
 
     return {

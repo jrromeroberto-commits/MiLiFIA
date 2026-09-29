@@ -15,6 +15,9 @@ export const lifeOSIntentJsonSchema = {
         "get_project_activity",
         "create_expense",
         "summarize_expenses",
+        "create_habit",
+        "log_habit",
+        "create_goal",
         "complete_task",
         "unknown",
       ],
@@ -109,6 +112,45 @@ export const lifeOSIntentJsonSchema = {
       enum: ["TOTAL", "BY_CATEGORY", null],
       description: "TOTAL para cuánto se gastó; BY_CATEGORY para en qué se gastó más.",
     },
+    habitName: {
+      type: ["string", "null"],
+      description: "Nombre breve del hábito para create_habit o log_habit.",
+    },
+    habitFrequency: {
+      type: ["string", "null"],
+      enum: ["DAILY", "WEEKLY", null],
+      description: "Período del objetivo al crear un hábito.",
+    },
+    habitTargetCount: {
+      type: ["integer", "null"],
+      minimum: 1,
+      maximum: 365,
+      description: "Cantidad de sesiones objetivo por período para create_habit.",
+    },
+    habitValue: {
+      type: ["number", "null"],
+      exclusiveMinimum: 0,
+      description: "Cantidad realizada para log_habit; usa 1 si solo se indica que se hizo.",
+    },
+    habitUnit: {
+      type: ["string", "null"],
+      enum: ["SESSIONS", "MINUTES", "HOURS", "KILOMETERS", "PAGES", null],
+      description: "Unidad explícita o sesiones para la frecuencia de un hábito.",
+    },
+    habitDate: {
+      type: ["string", "null"],
+      format: "date",
+      description: "Fecha YYYY-MM-DD en que se realizó el hábito.",
+    },
+    goalTitle: {
+      type: ["string", "null"],
+      description: "Resultado que la persona quiere alcanzar.",
+    },
+    goalTargetDate: {
+      type: ["string", "null"],
+      format: "date",
+      description: "Fecha objetivo YYYY-MM-DD; null si no se indicó ningún plazo.",
+    },
     clarificationQuestion: {
       type: ["string", "null"],
       description:
@@ -133,6 +175,14 @@ export const lifeOSIntentJsonSchema = {
     "expenseDate",
     "expenseTimeframe",
     "expenseAggregation",
+    "habitName",
+    "habitFrequency",
+    "habitTargetCount",
+    "habitValue",
+    "habitUnit",
+    "habitDate",
+    "goalTitle",
+    "goalTargetDate",
     "clarificationQuestion",
   ],
 } as const;
