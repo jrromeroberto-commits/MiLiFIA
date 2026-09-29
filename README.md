@@ -3,10 +3,10 @@
 LifeOS es una aplicación personal tipo “segundo cerebro”. Su promesa es simple:
 **dime lo que tienes en la cabeza y yo lo organizo**.
 
-El desarrollo avanza por fases deliberadamente pequeñas. Las Fases 1 a 5
+El desarrollo avanza por fases deliberadamente pequeñas. Las Fases 1 a 6
 establecen la base web, la capa de datos, una interfaz funcional, el intérprete
-de Gemini y un chat que ejecuta herramientas internas validadas contra
-PostgreSQL.
+de Gemini, un chat que ejecuta herramientas internas y una captura múltiple con
+confirmación previa y guardado atómico en PostgreSQL.
 
 ## Ejecutar el proyecto
 
@@ -31,6 +31,7 @@ npm run db:verify
 npm run ui:verify
 npm run ai:verify
 npm run chat:verify
+npm run brain-dump:verify
 ```
 
 ## Mapa rápido
@@ -39,7 +40,7 @@ npm run chat:verify
 src/
 ├── app/                    Rutas, metadatos y estilos globales
 │   ├── page.tsx            Inicio
-│   ├── chat/page.tsx       Chat funcional con lenguaje natural
+│   ├── chat/page.tsx       Chat y acceso a “Vaciar mi cabeza”
 │   ├── projects/page.tsx   Gestión funcional de proyectos
 │   ├── projects/[id]/      Detalle funcional de proyecto
 │   ├── inbox/page.tsx      Lista real de InboxItems
@@ -51,11 +52,11 @@ src/
 │   ├── forms/              Feedback y estados de envío
 │   ├── layout/             Shell y navegación responsive
 │   ├── projects/           Formularios y secciones de proyecto
-│   ├── chat/               Conversación y compositor
+│   ├── chat/               Conversación, compositor y captura múltiple
 │   └── ui/                 Componentes visuales compartidos
 ├── generated/prisma/       Cliente generado (ignorado por Git)
 ├── lib/
-│   ├── ai/                 Gemini, prompts y contratos de intents
+│   ├── ai/                 Gemini, intents y extracción de capturas múltiples
 │   ├── db/                 Cliente y repositorios de PostgreSQL
 │   └── validation/         Contratos de entrada con Zod
 └── services/               Reglas de negocio y aislamiento por usuario
@@ -68,7 +69,8 @@ scripts/
 ├── verify-ui.ts            Renderizado temporal de rutas con datos
 ├── verify-ai.ts            Contratos de IA sin red ni consumo de cuota
 ├── verify-gemini-live.ts   Consulta real opcional a Gemini
-└── verify-chat.ts          Ocho intents contra PostgreSQL y autolimpieza
+├── verify-chat.ts          Ocho intents contra PostgreSQL y autolimpieza
+└── verify-brain-dump.ts    Lote confirmado y atómico con autolimpieza
 public/
 └── sw.js                   Service worker básico
 docs/
@@ -83,7 +85,9 @@ modifica PostgreSQL sin exponer Prisma al navegador. La
 [Fase 4](docs/learning/phase-04-gemini.md) recorre la interpretación estructurada,
 la validación doble y el manejo de errores de Gemini. La
 [Fase 5](docs/learning/phase-05-chat.md) explica cómo el chat convierte una
-intención validada en una herramienta segura y una respuesta conversacional.
+intención validada en una herramienta segura y una respuesta conversacional. La
+[Fase 6](docs/learning/phase-06-brain-dump.md) recorre la captura múltiple, la
+pantalla de confirmación y el guardado transaccional.
 
 ## Base de datos local
 

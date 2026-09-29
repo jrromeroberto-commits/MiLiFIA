@@ -1,11 +1,11 @@
-export type IntentModelRequest = {
+export type StructuredOutputRequest = {
   model: string;
   systemInstruction: string;
   input: string;
   jsonSchema: Record<string, unknown>;
+  maxOutputTokens?: number;
 };
 
-export interface IntentModelProvider {
-  generateStructuredIntent(request: IntentModelRequest): Promise<string>;
+export interface StructuredOutputProvider {
+  generateStructuredOutput(request: StructuredOutputRequest): Promise<string>;
 }
-

@@ -2,14 +2,14 @@ import "server-only";
 
 import { z } from "zod";
 import { AiServiceError } from "@/lib/ai/errors";
-import { GeminiIntentProvider } from "@/lib/ai/gemini-provider";
+import { GeminiStructuredOutputProvider } from "@/lib/ai/gemini-provider";
 import {
   rawIntentResponseSchema,
   toLifeOSIntent,
   type LifeOSIntent,
 } from "@/lib/ai/intent-schema";
 import { buildIntentPrompt } from "@/lib/ai/prompt";
-import type { IntentModelProvider } from "@/lib/ai/provider";
+import type { StructuredOutputProvider } from "@/lib/ai/provider";
 import { lifeOSIntentJsonSchema } from "@/lib/ai/structured-schema";
 import { chatContextSchema } from "@/lib/validation/chat";
 
@@ -25,7 +25,7 @@ const interpretationInputSchema = z
 export type InterpretLifeOSTextInput = z.input<typeof interpretationInputSchema>;
 
 type InterpretLifeOSTextOptions = {
-  provider?: IntentModelProvider;
+  provider?: StructuredOutputProvider;
 };
 
 const DEFAULT_MODEL = "gemini-3.5-flash-lite";
@@ -89,10 +89,10 @@ export async function interpretLifeOSText(
     timeZone,
     context: validatedInput.context ?? [],
   });
-  const provider = options.provider ?? new GeminiIntentProvider();
+  const provider = options.provider ?? new GeminiStructuredOutputProvider();
   const model = process.env.GEMINI_MODEL?.trim() || DEFAULT_MODEL;
 
-  const responseText = await provider.generateStructuredIntent({
+  const responseText = await provider.generateStructuredOutput({
     model,
     systemInstruction: prompt.systemInstruction,
     input: prompt.input,

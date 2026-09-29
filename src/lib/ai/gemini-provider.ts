@@ -2,16 +2,19 @@ import "server-only";
 
 import { ApiError, GoogleGenAI } from "@google/genai";
 import { AiServiceError } from "@/lib/ai/errors";
-import type { IntentModelProvider, IntentModelRequest } from "@/lib/ai/provider";
+import type {
+  StructuredOutputProvider,
+  StructuredOutputRequest,
+} from "@/lib/ai/provider";
 
-type GeminiIntentProviderOptions = {
+type GeminiStructuredOutputProviderOptions = {
   apiKey?: string;
 };
 
-export class GeminiIntentProvider implements IntentModelProvider {
+export class GeminiStructuredOutputProvider implements StructuredOutputProvider {
   private readonly client: GoogleGenAI;
 
-  constructor(options: GeminiIntentProviderOptions = {}) {
+  constructor(options: GeminiStructuredOutputProviderOptions = {}) {
     const apiKey = (options.apiKey ?? process.env.GEMINI_API_KEY)?.trim();
 
     if (!apiKey) {
@@ -24,7 +27,7 @@ export class GeminiIntentProvider implements IntentModelProvider {
     this.client = new GoogleGenAI({ apiKey });
   }
 
-  async generateStructuredIntent(request: IntentModelRequest) {
+  async generateStructuredOutput(request: StructuredOutputRequest) {
     try {
       const interaction = await this.client.interactions.create(
         {
@@ -32,7 +35,7 @@ export class GeminiIntentProvider implements IntentModelProvider {
           input: request.input,
           system_instruction: request.systemInstruction,
           generation_config: {
-            max_output_tokens: 1_024,
+            max_output_tokens: request.maxOutputTokens ?? 1_024,
           },
           response_format: {
             type: "text",

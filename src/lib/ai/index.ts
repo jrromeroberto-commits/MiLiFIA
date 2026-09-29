@@ -10,7 +10,6 @@ export {
   type LifeOSIntent,
 } from "@/lib/ai/intent-schema";
 export type {
-  IntentModelProvider,
-  IntentModelRequest,
+  StructuredOutputProvider,
+  StructuredOutputRequest,
 } from "@/lib/ai/provider";
-

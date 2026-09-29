@@ -1,13 +1,13 @@
 import assert from "node:assert/strict";
 import { AiServiceError } from "@/lib/ai/errors";
-import { GeminiIntentProvider } from "@/lib/ai/gemini-provider";
+import { GeminiStructuredOutputProvider } from "@/lib/ai/gemini-provider";
 import {
   interpretLifeOSText,
   parseIntentResponse,
 } from "@/lib/ai/intent-service";
 import type {
-  IntentModelProvider,
-  IntentModelRequest,
+  StructuredOutputProvider,
+  StructuredOutputRequest,
 } from "@/lib/ai/provider";
 
 const emptyResponse = {
@@ -24,12 +24,12 @@ const emptyResponse = {
   clarificationQuestion: null,
 };
 
-class FakeIntentProvider implements IntentModelProvider {
-  lastRequest: IntentModelRequest | null = null;
+class FakeIntentProvider implements StructuredOutputProvider {
+  lastRequest: StructuredOutputRequest | null = null;
 
   constructor(private readonly response: unknown) {}
 
-  async generateStructuredIntent(request: IntentModelRequest) {
+  async generateStructuredOutput(request: StructuredOutputRequest) {
     this.lastRequest = request;
     return JSON.stringify(this.response);
   }
@@ -154,7 +154,7 @@ assert.throws(
 );
 
 assert.throws(
-  () => new GeminiIntentProvider({ apiKey: "" }),
+  () => new GeminiStructuredOutputProvider({ apiKey: "" }),
   (error) => error instanceof AiServiceError && error.code === "CONFIGURATION",
 );
 
