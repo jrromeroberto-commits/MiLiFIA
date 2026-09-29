@@ -3,10 +3,11 @@
 LifeOS es una aplicación personal tipo “segundo cerebro”. Su promesa es simple:
 **dime lo que tienes en la cabeza y yo lo organizo**.
 
-El desarrollo avanza por fases deliberadamente pequeñas. Las Fases 1 a 6
+El desarrollo avanza por fases deliberadamente pequeñas. Las Fases 1 a 7
 establecen la base web, la capa de datos, una interfaz funcional, el intérprete
 de Gemini, un chat que ejecuta herramientas internas y una captura múltiple con
-confirmación previa y guardado atómico en PostgreSQL.
+confirmación previa. El chat también responde consultas inteligentes calculadas
+con datos reales de PostgreSQL.
 
 ## Ejecutar el proyecto
 
@@ -32,6 +33,7 @@ npm run ui:verify
 npm run ai:verify
 npm run chat:verify
 npm run brain-dump:verify
+npm run queries:verify
 ```
 
 ## Mapa rápido
@@ -58,8 +60,9 @@ src/
 ├── lib/
 │   ├── ai/                 Gemini, intents y extracción de capturas múltiples
 │   ├── db/                 Cliente y repositorios de PostgreSQL
+│   ├── time/               Reglas de calendario en America/Lima
 │   └── validation/         Contratos de entrada con Zod
-└── services/               Reglas de negocio y aislamiento por usuario
+└── services/               Reglas de negocio, consultas y aislamiento por usuario
 prisma/
 ├── schema.prisma           Modelos y relaciones
 ├── migrations/             Historial SQL versionado
@@ -70,7 +73,8 @@ scripts/
 ├── verify-ai.ts            Contratos de IA sin red ni consumo de cuota
 ├── verify-gemini-live.ts   Consulta real opcional a Gemini
 ├── verify-chat.ts          Ocho intents contra PostgreSQL y autolimpieza
-└── verify-brain-dump.ts    Lote confirmado y atómico con autolimpieza
+├── verify-brain-dump.ts    Lote confirmado y atómico con autolimpieza
+└── verify-smart-queries.ts Cinco consultas de solo lectura y autolimpieza
 public/
 └── sw.js                   Service worker básico
 docs/
@@ -87,7 +91,9 @@ la validación doble y el manejo de errores de Gemini. La
 [Fase 5](docs/learning/phase-05-chat.md) explica cómo el chat convierte una
 intención validada en una herramienta segura y una respuesta conversacional. La
 [Fase 6](docs/learning/phase-06-brain-dump.md) recorre la captura múltiple, la
-pantalla de confirmación y el guardado transaccional.
+pantalla de confirmación y el guardado transaccional. La
+[Fase 7](docs/learning/phase-07-intelligent-queries.md) explica cómo una pregunta
+natural termina en filtros y cálculos confiables sobre PostgreSQL.
 
 ## Base de datos local
 

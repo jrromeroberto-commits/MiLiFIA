@@ -2,70 +2,25 @@ import "server-only";
 
 import type { LifeOSIntent } from "@/lib/ai/intent-schema";
 import { formatCalendarDate } from "@/lib/presentation/date";
+import {
+  localDateKey,
+  offsetDateKey,
+  weekRange,
+} from "@/lib/time/calendar";
 import { createIdea } from "@/services/idea-service";
+import { executeIntelligentQuery } from "@/services/intelligent-query-tool-service";
 import { createNote } from "@/services/note-service";
 import { createProject, listProjects } from "@/services/project-service";
+import {
+  normalizeLifeOSName,
+  resolveProject,
+} from "@/services/project-resolution-service";
 import { createTask, listTasks, updateTask } from "@/services/task-service";
+import type { ChatToolResult } from "@/services/chat-types";
 
-export type ChatResultItem = {
-  label: string;
-  detail: string | null;
-  href: string | null;
-};
-
-export type ChatToolResult = {
-  intent: LifeOSIntent["intent"];
-  outcome: "created" | "completed" | "answer" | "clarification";
-  reply: string;
-  items: ChatResultItem[];
-  mutated: boolean;
-};
-
-type UserProject = Awaited<ReturnType<typeof listProjects>>[number];
-
-type ProjectResolution =
-  | { status: "none"; project: null }
-  | { status: "found"; project: UserProject }
-  | { status: "clarification"; result: ChatToolResult };
+export type { ChatResultItem, ChatToolResult } from "@/services/chat-types";
 
 const unfinishedStatuses = new Set(["TODO", "IN_PROGRESS"]);
-
-function normalize(value: string) {
-  return value
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLocaleLowerCase("es")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-function localDateKey(date: Date, timeZone = "America/Lima") {
-  const parts = new Intl.DateTimeFormat("en-US", {
-    timeZone,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).formatToParts(date);
-  const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
-  return `${values.year}-${values.month}-${values.day}`;
-}
-
-function offsetDateKey(dateKey: string, days: number) {
-  const [year, month, day] = dateKey.split("-").map(Number);
-  const date = new Date(Date.UTC(year, month - 1, day + days));
-  return date.toISOString().slice(0, 10);
-}
-
-function thisWeekRange(today: string) {
-  const [year, month, day] = today.split("-").map(Number);
-  const date = new Date(Date.UTC(year, month - 1, day));
-  const daysSinceMonday = (date.getUTCDay() + 6) % 7;
-
-  return {
-    start: offsetDateKey(today, -daysSinceMonday),
-    end: offsetDateKey(today, 6 - daysSinceMonday),
-  };
-}
 
 function dueDateLabel(dueDate: Date | null) {
   return dueDate ? formatCalendarDate(dueDate) : "sin fecha";
@@ -76,58 +31,6 @@ function intentResult(
   values: Omit<ChatToolResult, "intent">,
 ): ChatToolResult {
   return { intent, ...values };
-}
-
-async function resolveProject(
-  userId: string,
-  projectName: string | null,
-  intent: LifeOSIntent["intent"],
-): Promise<ProjectResolution> {
-  if (!projectName) return { status: "none", project: null };
-
-  const projects = await listProjects(userId);
-  const expectedName = normalize(projectName);
-  const exactMatches = projects.filter(
-    (project) => normalize(project.name) === expectedName,
-  );
-
-  if (exactMatches.length === 1) {
-    return { status: "found", project: exactMatches[0] };
-  }
-
-  if (exactMatches.length > 1) {
-    return {
-      status: "clarification",
-      result: intentResult(intent, {
-        outcome: "clarification",
-        reply: `Encontré más de un proyecto llamado “${projectName}”. ¿Cuál quieres usar?`,
-        items: exactMatches.slice(0, 5).map((project) => ({
-          label: project.name,
-          detail: project.status,
-          href: `/projects/${project.id}`,
-        })),
-        mutated: false,
-      }),
-    };
-  }
-
-  const suggestions = projects
-    .filter((project) => normalize(project.name).includes(expectedName))
-    .slice(0, 3);
-
-  return {
-    status: "clarification",
-    result: intentResult(intent, {
-      outcome: "clarification",
-      reply: `No encontré un proyecto llamado “${projectName}”. ¿Quieres usar otro proyecto o guardar esto sin proyecto?`,
-      items: suggestions.map((project) => ({
-        label: project.name,
-        detail: "Proyecto parecido",
-        href: `/projects/${project.id}`,
-      })),
-      mutated: false,
-    }),
-  };
 }
 
 async function executeCreateTask(
@@ -175,7 +78,8 @@ async function executeCreateProject(
 ) {
   const projects = await listProjects(userId);
   const existing = projects.find(
-    (project) => normalize(project.name) === normalize(intent.name),
+    (project) =>
+      normalizeLifeOSName(project.name) === normalizeLifeOSName(intent.name),
   );
 
   if (existing) {
@@ -297,7 +201,7 @@ async function executeListTasks(
   );
   const today = localDateKey(new Date());
   const tomorrow = offsetDateKey(today, 1);
-  const week = thisWeekRange(today);
+  const week = weekRange(today);
   const requestedStatus = intent.taskStatus ?? "PENDING";
 
   const filtered = tasks.filter((task) => {
@@ -412,18 +316,20 @@ async function executeCompleteTask(
   const projectNames = new Map(
     (project ? [project] : projects).map((item) => [item.id, item.name]),
   );
-  const expectedTitle = normalize(intent.title);
+  const expectedTitle = normalizeLifeOSName(intent.title);
   const candidates = tasks.filter(
     (task) =>
       unfinishedStatuses.has(task.status) &&
       (!project || task.projectId === project.id),
   );
   const exactMatches = candidates.filter(
-    (task) => normalize(task.title) === expectedTitle,
+    (task) => normalizeLifeOSName(task.title) === expectedTitle,
   );
   const matches = exactMatches.length
     ? exactMatches
-    : candidates.filter((task) => normalize(task.title).includes(expectedTitle));
+    : candidates.filter((task) =>
+        normalizeLifeOSName(task.title).includes(expectedTitle),
+      );
 
   if (!matches.length) {
     return intentResult(intent.intent, {
@@ -487,6 +393,10 @@ export async function executeLifeOSIntent(userId: string, intent: LifeOSIntent) 
       return executeListTasks(userId, intent);
     case "list_projects":
       return executeListProjects(userId, intent);
+    case "list_ideas":
+      return executeIntelligentQuery(userId, intent);
+    case "get_project_activity":
+      return executeIntelligentQuery(userId, intent);
     case "complete_task":
       return executeCompleteTask(userId, intent);
     case "unknown":
@@ -498,4 +408,3 @@ export async function executeLifeOSIntent(userId: string, intent: LifeOSIntent) 
       });
   }
 }
-

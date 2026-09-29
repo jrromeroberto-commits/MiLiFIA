@@ -7,6 +7,8 @@ export const lifeOSIntentNameSchema = z.enum([
   "create_note",
   "list_tasks",
   "list_projects",
+  "list_ideas",
+  "get_project_activity",
   "complete_task",
   "unknown",
 ]);
@@ -113,6 +115,23 @@ const listProjectsIntentSchema = z
   })
   .strict();
 
+const listIdeasIntentSchema = z
+  .object({
+    intent: z.literal("list_ideas"),
+    timeframe: z.enum(["TODAY", "THIS_WEEK", "ALL"]).nullable(),
+    projectName: nullableProjectNameSchema,
+    clarificationQuestion: clarificationQuestionSchema,
+  })
+  .strict();
+
+const getProjectActivityIntentSchema = z
+  .object({
+    intent: z.literal("get_project_activity"),
+    projectName: z.string().trim().min(1).max(160),
+    clarificationQuestion: clarificationQuestionSchema,
+  })
+  .strict();
+
 const completeTaskIntentSchema = z
   .object({
     intent: z.literal("complete_task"),
@@ -136,6 +155,8 @@ export const lifeOSIntentSchema = z.discriminatedUnion("intent", [
   createNoteIntentSchema,
   listTasksIntentSchema,
   listProjectsIntentSchema,
+  listIdeasIntentSchema,
+  getProjectActivityIntentSchema,
   completeTaskIntentSchema,
   unknownIntentSchema,
 ]);
@@ -192,6 +213,19 @@ export function toLifeOSIntent(raw: RawIntentResponse): LifeOSIntent {
         projectStatus: raw.projectStatus,
         clarificationQuestion: raw.clarificationQuestion,
       });
+    case "list_ideas":
+      return lifeOSIntentSchema.parse({
+        intent: raw.intent,
+        timeframe: raw.timeframe,
+        projectName: raw.projectName,
+        clarificationQuestion: raw.clarificationQuestion,
+      });
+    case "get_project_activity":
+      return lifeOSIntentSchema.parse({
+        intent: raw.intent,
+        projectName: raw.projectName,
+        clarificationQuestion: raw.clarificationQuestion,
+      });
     case "complete_task":
       return lifeOSIntentSchema.parse({
         intent: raw.intent,
@@ -206,4 +240,3 @@ export function toLifeOSIntent(raw: RawIntentResponse): LifeOSIntent {
       });
   }
 }
-

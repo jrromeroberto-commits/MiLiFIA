@@ -22,10 +22,11 @@ type ChatMessage = {
 };
 
 const suggestions = [
-  "Mañana revisar mi tesis",
-  "Crea un proyecto llamado CasaBalance",
-  "¿Qué tareas tengo pendientes?",
-  "Tengo una idea para una aplicación de viajes",
+  "¿Qué tengo que hacer hoy?",
+  "¿Qué tareas tengo atrasadas?",
+  "¿Qué proyectos tengo activos?",
+  "¿Qué ideas guardé esta semana?",
+  "¿Cuándo fue la última vez que avancé LifeOS?",
 ];
 
 const intentLabels: Record<string, string> = {
@@ -35,6 +36,8 @@ const intentLabels: Record<string, string> = {
   create_note: "Guardar nota",
   list_tasks: "Consultar tareas",
   list_projects: "Consultar proyectos",
+  list_ideas: "Consultar ideas",
+  get_project_activity: "Consultar actividad",
   complete_task: "Completar tarea",
   unknown: "Necesita contexto",
 };
@@ -44,7 +47,7 @@ const initialMessages: ChatMessage[] = [
     id: 0,
     role: "assistant",
     content:
-      "Cuéntame qué tienes en mente. Puedo crear y consultar tareas o proyectos, guardar ideas y notas, y completar tareas.",
+      "Cuéntame qué tienes en mente. Puedo organizar acciones y responder preguntas sobre tus tareas, proyectos, ideas y actividad reciente.",
   },
 ];
 

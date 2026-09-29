@@ -21,7 +21,9 @@
     "ai:verify:live": "tsx --conditions=react-server scripts/verify-gemini-live.ts",
     "chat:verify": "tsx --conditions=react-server scripts/verify-chat.ts",
     "brain-dump:verify": "tsx --conditions=react-server scripts/verify-brain-dump.ts",
-    "brain-dump:verify:live": "tsx --conditions=react-server scripts/verify-brain-dump-live.ts"
+    "brain-dump:verify:live": "tsx --conditions=react-server scripts/verify-brain-dump-live.ts",
+    "queries:verify": "tsx --conditions=react-server scripts/verify-smart-queries.ts",
+    "queries:verify:live": "tsx --conditions=react-server scripts/verify-smart-queries-live.ts"
   },
   "dependencies": {
     "@google/genai": "^2.24.0",

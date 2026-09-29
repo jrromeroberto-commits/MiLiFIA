@@ -11,6 +11,8 @@ export const lifeOSIntentJsonSchema = {
         "create_note",
         "list_tasks",
         "list_projects",
+        "list_ideas",
+        "get_project_activity",
         "complete_task",
         "unknown",
       ],
@@ -56,7 +58,8 @@ export const lifeOSIntentJsonSchema = {
     timeframe: {
       type: ["string", "null"],
       enum: ["TODAY", "TOMORROW", "THIS_WEEK", "OVERDUE", "ALL", null],
-      description: "Periodo solicitado para list_tasks; null si no se especifica.",
+      description:
+        "Periodo solicitado para list_tasks o list_ideas; null si no se especifica. Para ideas solo usa TODAY, THIS_WEEK o ALL.",
     },
     projectStatus: {
       type: ["string", "null"],

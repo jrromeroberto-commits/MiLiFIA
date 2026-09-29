@@ -85,6 +85,22 @@ const fixtures = [
   {
     response: {
       ...emptyResponse,
+      intent: "list_ideas",
+      timeframe: "THIS_WEEK",
+    },
+    intent: "list_ideas",
+  },
+  {
+    response: {
+      ...emptyResponse,
+      intent: "get_project_activity",
+      projectName: "LifeOS",
+    },
+    intent: "get_project_activity",
+  },
+  {
+    response: {
+      ...emptyResponse,
       intent: "complete_task",
       title: "Revisar login",
     },
@@ -159,5 +175,5 @@ assert.throws(
 );
 
 console.log(
-  "Capa de IA verificada: 8 intents válidos y respuestas inseguras rechazadas.",
+  "Capa de IA verificada: 10 intents válidos y respuestas inseguras rechazadas.",
 );
