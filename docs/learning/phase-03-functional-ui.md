@@ -61,8 +61,8 @@ autenticación real si el proyecto se vuelve multiusuario.
 
 Todavía no existe una entidad `Activity`. La actividad del proyecto se deriva
 de `createdAt` y `completedAt` de tareas, ideas y notas. La UI lo indica
-explícitamente para no prometer un historial que la base aún no conserva. La
-bitácora completa pertenece a la Fase 14.
+explícitamente para no prometer un historial que la base aún no conserva.
+La vista global de actividad se incorpora en la Fase 14 mediante `/timeline`.
 
 ## Estados importantes
 

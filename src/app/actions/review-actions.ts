@@ -2,6 +2,7 @@
 
 import { z } from "zod";
 import { AiServiceError } from "@/lib/ai/errors";
+import { aiUserErrorMessage } from "@/lib/ai/user-error-message";
 import {
   generateReviewNarrative,
   type ReviewNarrative,
@@ -14,23 +15,6 @@ const reviewKindSchema = z.enum(["daily", "weekly"]);
 export type ReviewNarrativeResponse =
   | { ok: true; narrative: ReviewNarrative; message: string }
   | { ok: false; narrative: null; message: string };
-
-function aiErrorMessage(error: AiServiceError) {
-  switch (error.code) {
-    case "CONFIGURATION":
-      return "Gemini todavía no está configurado. Revisa GEMINI_API_KEY en .env.";
-    case "AUTHENTICATION":
-      return "Gemini rechazó la clave configurada. Revisa la credencial.";
-    case "RATE_LIMIT":
-      return "Gemini alcanzó temporalmente su límite. Espera un momento e inténtalo otra vez.";
-    case "UNAVAILABLE":
-      return "Gemini no está disponible ahora. Inténtalo nuevamente en unos minutos.";
-    case "INVALID_RESPONSE":
-      return "Gemini no pudo redactar una reflexión segura con estas métricas.";
-    case "PROVIDER":
-      return "No pude comunicarme con Gemini. Revisa tu conexión e inténtalo nuevamente.";
-  }
-}
 
 export async function generateReviewNarrativeAction(
   kind: "daily" | "weekly",
@@ -51,7 +35,14 @@ export async function generateReviewNarrativeAction(
       return { ok: false, narrative: null, message: "El tipo de revisión no es válido." };
     }
     if (error instanceof AiServiceError) {
-      return { ok: false, narrative: null, message: aiErrorMessage(error) };
+      return {
+        ok: false,
+        narrative: null,
+        message: aiUserErrorMessage(
+          error,
+          "Gemini no pudo redactar una reflexión segura con estas métricas.",
+        ),
+      };
     }
 
     console.error("No se pudo generar la reflexión de la revisión.", error);
@@ -62,4 +53,3 @@ export async function generateReviewNarrativeAction(
     };
   }
 }
-

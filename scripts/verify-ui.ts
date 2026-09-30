@@ -11,9 +11,14 @@ const baseUrl = process.env.LIFEOS_TEST_URL ?? "http://localhost:3000";
 const suffix = randomUUID().slice(0, 8);
 const created: { project?: string; task?: string; idea?: string; note?: string } = {};
 
-async function assertRoute(path: string) {
+async function assertRoute(path: string, expectedStatus = 200) {
   const response = await fetch(`${baseUrl}${path}`);
-  assert.equal(response.status, 200, `${path} respondió ${response.status}`);
+  assert.equal(
+    response.status,
+    expectedStatus,
+    `${path} respondió ${response.status}`,
+  );
+  return response;
 }
 
 async function main() {
@@ -44,14 +49,31 @@ async function main() {
   });
   created.note = note.id;
 
-  await assertRoute("/");
+  const homeResponse = await assertRoute("/");
+  assert.equal(homeResponse.headers.get("x-content-type-options"), "nosniff");
+  assert.equal(homeResponse.headers.get("x-frame-options"), "DENY");
+  assert.match(
+    homeResponse.headers.get("content-security-policy") ?? "",
+    /frame-ancestors 'none'/,
+  );
   await assertRoute("/projects");
   await assertRoute(`/projects/${project.id}`);
   await assertRoute("/inbox");
   await assertRoute("/review/daily");
   await assertRoute("/review/weekly");
   await assertRoute("/growth");
-  console.log("Rutas con datos reales, incluidas las revisiones, verificadas correctamente.");
+  await assertRoute("/timeline");
+  await assertRoute("/offline");
+  await assertRoute("/manifest.webmanifest");
+  await assertRoute(`/ruta-inexistente-${suffix}`, 404);
+
+  const serviceWorker = await (await assertRoute("/sw.js")).text();
+  assert.match(serviceWorker, /"\/offline"/);
+  assert.doesNotMatch(serviceWorker, /"\/(?:chat|projects|inbox)"/);
+
+  console.log(
+    "Rutas, estados, cabeceras de seguridad y caché PWA verificados correctamente.",
+  );
 }
 
 async function cleanup() {

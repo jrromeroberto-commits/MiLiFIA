@@ -59,6 +59,7 @@ export default async function ProjectsPage() {
                     <span className="rounded-full bg-slate-100 px-2.5 py-1">{project._count.tasks} tareas</span>
                     <span className="rounded-full bg-slate-100 px-2.5 py-1">{project._count.notes} notas</span>
                     <span className="rounded-full bg-slate-100 px-2.5 py-1">{project._count.ideas} ideas</span>
+                    <span className="rounded-full bg-slate-100 px-2.5 py-1">{project._count.files} archivos</span>
                   </div>
                 </Link>
               ))}

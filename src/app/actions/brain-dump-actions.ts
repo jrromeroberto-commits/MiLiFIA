@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { AiServiceError } from "@/lib/ai/errors";
+import { aiUserErrorMessage } from "@/lib/ai/user-error-message";
 import { extractBrainDump } from "@/lib/ai/brain-dump-service";
 import { requireCurrentUser } from "@/lib/auth/current-user";
 import {
@@ -23,23 +24,6 @@ export type BrainDumpAnalysisResponse =
 export type BrainDumpSaveResponse =
   | { ok: true; saved: SavedBrainDumpItem[]; message: string }
   | { ok: false; saved: []; message: string };
-
-function aiErrorMessage(error: AiServiceError) {
-  switch (error.code) {
-    case "CONFIGURATION":
-      return "Gemini todavía no está configurado. Revisa GEMINI_API_KEY en .env.";
-    case "AUTHENTICATION":
-      return "Gemini rechazó la clave configurada. Revisa la credencial.";
-    case "RATE_LIMIT":
-      return "Gemini alcanzó temporalmente su límite. Espera un momento e inténtalo otra vez.";
-    case "UNAVAILABLE":
-      return "Gemini no está disponible ahora. Inténtalo nuevamente en unos minutos.";
-    case "INVALID_RESPONSE":
-      return "No pude separar el texto con suficiente seguridad. Prueba expresándolo de otra forma.";
-    case "PROVIDER":
-      return "No pude comunicarme con Gemini. Revisa tu conexión e inténtalo nuevamente.";
-  }
-}
 
 export async function analyzeBrainDumpAction(
   text: string,
@@ -62,7 +46,14 @@ export async function analyzeBrainDumpAction(
       };
     }
     if (error instanceof AiServiceError) {
-      return { ok: false, items: [], message: aiErrorMessage(error) };
+      return {
+        ok: false,
+        items: [],
+        message: aiUserErrorMessage(
+          error,
+          "No pude separar el texto con suficiente seguridad. Prueba expresándolo de otra forma.",
+        ),
+      };
     }
     console.error("No se pudo analizar el vaciado mental.", error);
     return {
@@ -111,4 +102,3 @@ export async function saveBrainDumpAction(
     };
   }
 }
-

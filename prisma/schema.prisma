@@ -109,6 +109,7 @@ model Project {
 
   @@unique([userId, name])
   @@index([userId, status])
+  @@index([userId, createdAt])
 }
 
 model ProjectFile {
@@ -166,6 +167,8 @@ model Task {
   project     Project?     @relation(fields: [projectId], references: [id], onDelete: SetNull)
 
   @@index([userId, status, dueDate])
+  @@index([userId, createdAt])
+  @@index([userId, completedAt])
   @@index([projectId])
 }
 
@@ -182,6 +185,7 @@ model Idea {
   project     Project?   @relation(fields: [projectId], references: [id], onDelete: SetNull)
 
   @@index([userId, status, createdAt])
+  @@index([userId, createdAt])
   @@index([projectId])
 }
 
@@ -197,6 +201,7 @@ model Note {
   project   Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
 
   @@index([userId, updatedAt])
+  @@index([userId, createdAt])
   @@index([projectId])
 }
 
@@ -229,6 +234,7 @@ model Expense {
 
   @@index([userId, date])
   @@index([userId, category, date])
+  @@index([userId, createdAt])
   @@index([projectId])
 }
 
@@ -248,6 +254,7 @@ model Habit {
 
   @@unique([userId, name])
   @@index([userId, active])
+  @@index([userId, createdAt])
 }
 
 model HabitLog {
@@ -262,6 +269,7 @@ model HabitLog {
   habit     Habit    @relation(fields: [habitId], references: [id], onDelete: Cascade)
 
   @@index([userId, date])
+  @@index([userId, createdAt])
   @@index([habitId, date])
 }
 
@@ -278,4 +286,6 @@ model Goal {
   user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, status, targetDate])
+  @@index([userId, createdAt])
+  @@index([userId, completedAt])
 }

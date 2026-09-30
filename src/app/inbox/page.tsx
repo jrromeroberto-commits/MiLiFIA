@@ -66,7 +66,7 @@ export default async function InboxPage() {
         ) : (
           <EmptyState
             title="Tu Inbox está limpio"
-            description="Los mensajes capturados desde el chat y el Brain Dump aparecerán aquí en fases posteriores."
+            description="Las capturas que necesiten clasificación o confirmación aparecerán aquí."
           />
         )}
       </section>

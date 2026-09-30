@@ -3,7 +3,6 @@
 import Link from "next/link";
 import {
   startTransition,
-  useEffect,
   useRef,
   useState,
   type FormEvent,
@@ -13,6 +12,7 @@ import {
   saveBrainDumpAction,
   type BrainDumpSaveResponse,
 } from "@/app/actions/brain-dump-actions";
+import { useModalDialog } from "@/components/chat/use-modal-dialog";
 import type { BrainDumpDraft } from "@/lib/validation/brain-dump";
 
 type Stage = "input" | "review" | "saved";
@@ -46,30 +46,6 @@ export function BrainDumpDialog() {
   const [pending, setPending] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  useEffect(() => {
-    if (!open) return;
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && !pending) {
-        setOpen(false);
-        setStage("input");
-        setText("");
-        setItems([]);
-        setSelected(new Set());
-        setFeedback(null);
-        setSavedResult(null);
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    requestAnimationFrame(() => inputRef.current?.focus());
-
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [open, pending]);
-
   function resetDialog() {
     setStage("input");
     setText("");
@@ -84,6 +60,13 @@ export function BrainDumpDialog() {
     setOpen(false);
     resetDialog();
   }
+
+  const { dialogRef, triggerRef } = useModalDialog({
+    open,
+    pending,
+    onClose: closeDialog,
+    initialFocusRef: inputRef,
+  });
 
   function analyze(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -158,6 +141,7 @@ export function BrainDumpDialog() {
       <button
         className="inline-flex min-h-11 items-center justify-center rounded-xl bg-violet-600 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700"
         onClick={() => setOpen(true)}
+        ref={triggerRef}
         type="button"
       >
         <span className="mr-2 text-base" aria-hidden="true">✦</span>
@@ -172,7 +156,9 @@ export function BrainDumpDialog() {
             aria-labelledby="brain-dump-title"
             aria-modal="true"
             className="flex max-h-[94vh] w-full max-w-4xl flex-col overflow-hidden rounded-t-[1.75rem] bg-white shadow-2xl sm:max-h-[88vh] sm:rounded-[1.75rem]"
+            ref={dialogRef}
             role="dialog"
+            tabIndex={-1}
           >
             <header className="flex items-start justify-between gap-4 border-b border-slate-200 px-5 py-5 sm:px-7">
               <div>

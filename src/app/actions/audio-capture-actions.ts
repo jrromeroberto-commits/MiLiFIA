@@ -3,6 +3,7 @@
 import { z } from "zod";
 import { extractAudioCapture } from "@/lib/ai/audio-capture-service";
 import { AiServiceError } from "@/lib/ai/errors";
+import { aiUserErrorMessage } from "@/lib/ai/user-error-message";
 import { requireCurrentUser } from "@/lib/auth/current-user";
 import {
   AudioUploadValidationError,
@@ -17,23 +18,6 @@ export type AudioCaptureAnalysisResponse =
       message: string;
     }
   | { ok: false; transcript: ""; items: []; message: string };
-
-function aiErrorMessage(error: AiServiceError) {
-  switch (error.code) {
-    case "CONFIGURATION":
-      return "Gemini todavía no está configurado. Revisa GEMINI_API_KEY en .env.";
-    case "AUTHENTICATION":
-      return "Gemini rechazó la clave configurada. Revisa la credencial.";
-    case "RATE_LIMIT":
-      return "Gemini alcanzó temporalmente su límite. Espera un momento e inténtalo otra vez.";
-    case "UNAVAILABLE":
-      return "Gemini no está disponible ahora. Inténtalo nuevamente en unos minutos.";
-    case "INVALID_RESPONSE":
-      return "No pude transcribir el audio con suficiente seguridad. Prueba con una grabación más clara.";
-    case "PROVIDER":
-      return "No pude comunicarme con Gemini. Revisa tu conexión e inténtalo nuevamente.";
-  }
-}
 
 export async function analyzeAudioCaptureAction(
   formData: FormData,
@@ -79,7 +63,10 @@ export async function analyzeAudioCaptureAction(
         ok: false,
         transcript: "",
         items: [],
-        message: aiErrorMessage(error),
+        message: aiUserErrorMessage(
+          error,
+          "No pude transcribir el audio con suficiente seguridad. Prueba con una grabación más clara.",
+        ),
       };
     }
     console.error("No se pudo analizar el audio.", error);

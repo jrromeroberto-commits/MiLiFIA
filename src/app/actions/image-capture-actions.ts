@@ -2,6 +2,7 @@
 
 import { z } from "zod";
 import { AiServiceError } from "@/lib/ai/errors";
+import { aiUserErrorMessage } from "@/lib/ai/user-error-message";
 import { extractImageCapture } from "@/lib/ai/image-capture-service";
 import { requireCurrentUser } from "@/lib/auth/current-user";
 import type { BrainDumpDraft } from "@/lib/validation/brain-dump";
@@ -10,23 +11,6 @@ import { ImageUploadValidationError } from "@/lib/validation/image-capture";
 export type ImageCaptureAnalysisResponse =
   | { ok: true; items: BrainDumpDraft[]; message: string }
   | { ok: false; items: []; message: string };
-
-function aiErrorMessage(error: AiServiceError) {
-  switch (error.code) {
-    case "CONFIGURATION":
-      return "Gemini todavía no está configurado. Revisa GEMINI_API_KEY en .env.";
-    case "AUTHENTICATION":
-      return "Gemini rechazó la clave configurada. Revisa la credencial.";
-    case "RATE_LIMIT":
-      return "Gemini alcanzó temporalmente su límite. Espera un momento e inténtalo otra vez.";
-    case "UNAVAILABLE":
-      return "Gemini no está disponible ahora. Inténtalo nuevamente en unos minutos.";
-    case "INVALID_RESPONSE":
-      return "No pude leer la imagen con suficiente seguridad. Prueba con una foto más nítida.";
-    case "PROVIDER":
-      return "No pude comunicarme con Gemini. Revisa tu conexión e inténtalo nuevamente.";
-  }
-}
 
 export async function analyzeImageCaptureAction(
   formData: FormData,
@@ -57,7 +41,14 @@ export async function analyzeImageCaptureAction(
       return { ok: false, items: [], message: "La imagen enviada no es válida." };
     }
     if (error instanceof AiServiceError) {
-      return { ok: false, items: [], message: aiErrorMessage(error) };
+      return {
+        ok: false,
+        items: [],
+        message: aiUserErrorMessage(
+          error,
+          "No pude leer la imagen con suficiente seguridad. Prueba con una foto más nítida.",
+        ),
+      };
     }
     console.error("No se pudo analizar la imagen.", error);
     return {

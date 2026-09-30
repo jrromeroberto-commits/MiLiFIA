@@ -11,6 +11,11 @@ export const metadata: Metadata = {
   },
   description:
     "Un espacio personal para capturar, organizar y convertir tus pensamientos en acciones.",
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+  },
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,

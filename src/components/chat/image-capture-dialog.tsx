@@ -16,6 +16,7 @@ import {
   type BrainDumpSaveResponse,
 } from "@/app/actions/brain-dump-actions";
 import { DraftCard } from "@/components/chat/brain-dump-dialog";
+import { useModalDialog } from "@/components/chat/use-modal-dialog";
 import type { BrainDumpDraft } from "@/lib/validation/brain-dump";
 import { MAX_IMAGE_UPLOAD_BYTES } from "@/lib/validation/image-capture";
 
@@ -54,22 +55,6 @@ export function ImageCaptureDialog() {
     };
   }, [previewUrl]);
 
-  useEffect(() => {
-    if (!open) return;
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && !pending) closeDialog();
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    requestAnimationFrame(() => inputRef.current?.focus());
-
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  });
-
   function resetDialog() {
     setStage("input");
     setFile(null);
@@ -85,6 +70,13 @@ export function ImageCaptureDialog() {
     setOpen(false);
     resetDialog();
   }
+
+  const { dialogRef, triggerRef } = useModalDialog({
+    open,
+    pending,
+    onClose: closeDialog,
+    initialFocusRef: inputRef,
+  });
 
   function chooseFile(event: ChangeEvent<HTMLInputElement>) {
     const nextFile = event.target.files?.[0] ?? null;
@@ -192,6 +184,7 @@ export function ImageCaptureDialog() {
       <button
         className="inline-flex min-h-11 items-center justify-center rounded-xl border border-violet-200 bg-white px-4 text-sm font-semibold text-violet-700 shadow-sm transition hover:bg-violet-50"
         onClick={() => setOpen(true)}
+        ref={triggerRef}
         type="button"
       >
         <span className="mr-2 text-base" aria-hidden="true">▣</span>
@@ -206,7 +199,9 @@ export function ImageCaptureDialog() {
             aria-labelledby="image-capture-title"
             aria-modal="true"
             className="flex max-h-[94vh] w-full max-w-4xl flex-col overflow-hidden rounded-t-[1.75rem] bg-white shadow-2xl sm:max-h-[88vh] sm:rounded-[1.75rem]"
+            ref={dialogRef}
             role="dialog"
+            tabIndex={-1}
           >
             <header className="flex items-start justify-between gap-4 border-b border-slate-200 px-5 py-5 sm:px-7">
               <div>

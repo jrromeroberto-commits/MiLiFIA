@@ -37,7 +37,7 @@ export function ProjectActivity({ items }: { items: ActivityItem[] }) {
         <EmptyState compact title="Sin actividad" description="Los movimientos recientes del proyecto aparecerán aquí." />
       )}
       <p className="mt-5 text-xs leading-5 text-slate-400">
-        Esta vista se deriva de las fechas actuales. Una bitácora histórica completa llegará en la Fase 14.
+        Esta vista se deriva de las fechas actuales. Consulta la actividad global en la línea de tiempo.
       </p>
     </section>
   );

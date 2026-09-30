@@ -1,10 +1,14 @@
 import { requireCurrentUser } from "@/lib/auth/current-user";
+import { ZodError } from "zod";
 import { EntityNotFoundError } from "@/services/errors";
 import { getProjectFileDownload } from "@/services/project-file-service";
 
 function contentDisposition(name: string) {
   const fallback = name.replace(/[^a-zA-Z0-9._-]/g, "_") || "archivo";
-  return `attachment; filename="${fallback}"; filename*=UTF-8''${encodeURIComponent(name)}`;
+  const encoded = encodeURIComponent(name).replace(/[!'()*]/g, (character) =>
+    `%${character.charCodeAt(0).toString(16).toUpperCase()}`,
+  );
+  return `attachment; filename="${fallback}"; filename*=UTF-8''${encoded}`;
 }
 
 export async function GET(
@@ -26,7 +30,7 @@ export async function GET(
       },
     });
   } catch (error) {
-    if (error instanceof EntityNotFoundError) {
+    if (error instanceof EntityNotFoundError || error instanceof ZodError) {
       return new Response("Archivo no encontrado.", { status: 404 });
     }
     throw error;

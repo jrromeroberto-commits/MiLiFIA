@@ -6,11 +6,15 @@ export default function manifest(): MetadataRoute.Manifest {
     short_name: "LifeOS",
     description:
       "Un espacio personal para capturar y convertir pensamientos en acciones.",
+    id: "/",
     start_url: "/",
+    scope: "/",
     display: "standalone",
     background_color: "#f6f7fb",
     theme_color: "#f6f7fb",
     lang: "es",
+    categories: ["productivity", "utilities"],
+    prefer_related_applications: false,
     icons: [
       {
         src: "/favicon.ico",

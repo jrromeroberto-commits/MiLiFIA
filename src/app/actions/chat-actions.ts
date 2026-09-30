@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { requireCurrentUser } from "@/lib/auth/current-user";
 import { AiServiceError } from "@/lib/ai/errors";
+import { aiUserErrorMessage } from "@/lib/ai/user-error-message";
 import {
   chatContextSchema,
   chatMessageSchema,
@@ -19,23 +20,6 @@ export type ChatActionResponse = {
   reply: string;
   items: ChatResultItem[];
 };
-
-function aiErrorMessage(error: AiServiceError) {
-  switch (error.code) {
-    case "CONFIGURATION":
-      return "Gemini todavía no está configurado. Revisa GEMINI_API_KEY en tu archivo .env.";
-    case "AUTHENTICATION":
-      return "Gemini rechazó la clave configurada. Revisa la credencial en Google AI Studio.";
-    case "RATE_LIMIT":
-      return "Gemini alcanzó temporalmente su límite de uso. Espera un momento y vuelve a intentarlo.";
-    case "UNAVAILABLE":
-      return "Gemini no está disponible en este momento. Inténtalo nuevamente en unos minutos.";
-    case "INVALID_RESPONSE":
-      return "No pude interpretar ese mensaje con seguridad. Intenta expresarlo de otra manera.";
-    case "PROVIDER":
-      return "No pude comunicarme con Gemini. Revisa tu conexión e inténtalo nuevamente.";
-  }
-}
 
 export async function sendChatMessageAction(
   message: string,
@@ -79,7 +63,10 @@ export async function sendChatMessageAction(
         ok: false,
         intent: null,
         outcome: "error",
-        reply: aiErrorMessage(error),
+        reply: aiUserErrorMessage(
+          error,
+          "No pude interpretar ese mensaje con seguridad. Intenta expresarlo de otra manera.",
+        ),
         items: [],
       };
     }

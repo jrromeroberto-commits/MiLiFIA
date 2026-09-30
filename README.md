@@ -3,50 +3,97 @@
 LifeOS es una aplicación personal tipo “segundo cerebro”. Su promesa es simple:
 **dime lo que tienes en la cabeza y yo lo organizo**.
 
-El desarrollo avanza por fases deliberadamente pequeñas. Las Fases 1 a 9
-establecen la base web, la capa de datos, una interfaz funcional, el intérprete
-de Gemini, un chat que ejecuta herramientas internas y una captura múltiple con
-confirmación previa. El chat responde consultas inteligentes y las revisiones
-diaria y semanal presentan métricas calculadas con datos reales de PostgreSQL.
-El chat también registra y resume gastos personales en soles con precisión decimal.
-La Fase 10 añade captura visual de pizarras, apuntes, pantallas y listas. La
-Fase 11 permite grabar o subir audio, revisar su transcripción y confirmar cada
-acción antes de guardar. La Fase 12 incorpora hábitos, metas y estadísticas
-semanales calculadas por el backend. La Fase 13 agrega archivos por proyecto y
-búsqueda textual con citas verificables, preparada para RAG futuro.
+El MVP de 15 fases está completo. Incluye organización conversacional con Gemini,
+proyectos, tareas, ideas, notas, Inbox, gastos, hábitos, metas, revisiones,
+captura de texto, imagen y audio, archivos con búsqueda verificable y una línea
+de tiempo personal. PostgreSQL conserva los hechos; Gemini interpreta lenguaje
+natural, pero nunca escribe SQL ni modifica datos sin validación del backend.
 
-## Ejecutar el proyecto
+> **Privacidad actual:** LifeOS es una aplicación local de un solo usuario y aún
+> no tiene inicio de sesión. Los servidores de desarrollo y producción escuchan
+> únicamente en `127.0.0.1`. No la publiques ni la expongas mediante un túnel sin
+> implementar autenticación y autorización primero.
 
-Necesitas Node.js 20.19 o superior y Docker Desktop.
+## Instalación desde cero
 
-```bash
+### Requisitos
+
+- Node.js 22 o superior (`.nvmrc` fija la versión principal recomendada).
+- npm, incluido con Node.js.
+- Docker Desktop con Docker Compose.
+- Una clave de Google AI Studio solo si usarás funciones reales de Gemini.
+
+Desde PowerShell, dentro de la carpeta del proyecto:
+
+```powershell
 npm install
+Copy-Item .env.example .env
 npm run db:up
 npm run db:migrate
 npm run db:seed
 npm run dev
 ```
 
-Abre [http://localhost:3000](http://localhost:3000). Para comprobar la calidad
-técnica de esta fase:
+En macOS o Linux, sustituye la copia del archivo por:
 
 ```bash
-npm run lint
-npx tsc --noEmit
-npm run build
-npm run db:verify
-npm run ui:verify
-npm run ai:verify
-npm run chat:verify
-npm run brain-dump:verify
-npm run queries:verify
-npm run review:verify
-npm run expenses:verify
-npm run images:verify
-npm run audio:verify
-npm run growth:verify
-npm run files:verify
+cp .env.example .env
 ```
+
+Abre [http://localhost:3000](http://localhost:3000). El seed es reproducible:
+puedes ejecutarlo nuevamente sin crear otro usuario principal.
+
+Para usar el chat, las capturas y los resúmenes con IA, edita `.env` y añade tu
+propia `GEMINI_API_KEY`. No necesitas esa clave para compilar ni para ejecutar
+las verificaciones simuladas.
+
+### Ejecución local optimizada
+
+```powershell
+npm run build
+npm run start
+```
+
+Esto también queda limitado a `http://127.0.0.1:3000`.
+
+## Verificación técnica
+
+Con PostgreSQL iniciado, la comprobación principal ejecuta lint, TypeScript,
+build y todas las pruebas de servicios autolimpiables:
+
+```powershell
+npm run verify
+```
+
+La verificación de interfaz necesita que `npm run dev` o `npm run start` siga
+activo en otra terminal:
+
+```powershell
+npm run ui:verify
+```
+
+`ui:verify` comprueba las rutas principales, la página 404, el modo offline, las
+cabeceras de seguridad y que el service worker no guarde páginas privadas. Las
+pruebas con sufijo `:live` sí consumen cuota de Gemini y son opcionales.
+
+## Cómo viaja una operación
+
+```text
+Navegador
+  → Server Action / Route Handler
+  → validación Zod
+  → servicio de negocio
+  → repositorio
+  → Prisma
+  → PostgreSQL
+
+Gemini → JSON estructurado → validación Zod → herramienta interna autorizada
+```
+
+Los componentes no consultan Prisma directamente. Los cálculos financieros,
+fechas, estados y permisos de propietario se resuelven en el backend. Los
+archivos se sirven mediante una ruta privada y sus resultados de búsqueda citan
+fragmentos almacenados, en lugar de permitir respuestas inventadas.
 
 ## Mapa rápido
 
@@ -60,9 +107,14 @@ src/
 │   ├── inbox/page.tsx      Lista real de InboxItems
 │   ├── review/              Revisión diaria y semanal
 │   ├── growth/page.tsx     Hábitos, metas y progreso semanal
+│   ├── timeline/page.tsx   Actividad diaria y semanal
 │   ├── files/[id]/         Descarga privada de archivos
+│   ├── offline/page.tsx    Respaldo PWA sin información personal
 │   ├── actions/            Mutaciones seguras, incluido el chat
 │   ├── layout.tsx          Layout raíz y metadatos
+│   ├── error.tsx           Recuperación de errores de ruta
+│   ├── global-error.tsx    Recuperación del documento raíz
+│   ├── not-found.tsx       Estado 404 global
 │   ├── manifest.ts         Manifiesto instalable PWA
 │   └── globals.css         Sistema visual compartido
 ├── components/             Piezas de interfaz reutilizables
@@ -98,9 +150,10 @@ scripts/
 ├── verify-image-capture.ts Imagen multimodal, firmas y contrato seguro
 ├── verify-audio-capture.ts Audio multimodal, transcripción y formatos
 ├── verify-growth.ts        Hábitos, metas y estadísticas autolimpiables
-└── verify-files.ts         Archivos, búsqueda, citas y aislamiento
+├── verify-files.ts         Archivos, búsqueda, citas y aislamiento
+└── verify-timeline.ts      Actividad, zona horaria y aislamiento
 public/
-└── sw.js                   Service worker básico
+└── sw.js                   PWA con caché pública mínima y navegación por red
 docs/
 └── learning/               Explicaciones de cada fase
 ```
@@ -129,7 +182,11 @@ validación de audios y la revisión de la transcripción. La
 [Fase 12](docs/learning/phase-12-growth.md) documenta los modelos de crecimiento,
 las nuevas intenciones y las estadísticas calculadas en el backend. La
 [Fase 13](docs/learning/phase-13-project-files.md) explica el almacenamiento,
-la extracción local, los fragmentos y la búsqueda sin respuestas inventadas.
+la extracción local, los fragmentos y la búsqueda sin respuestas inventadas. La
+[Fase 14](docs/learning/phase-14-personal-timeline.md) recorre las consultas,
+la normalización de eventos y la agrupación horaria diaria/semanal. La
+[Fase 15](docs/learning/phase-15-final-polish.md) documenta la auditoría final,
+las decisiones de seguridad, accesibilidad, PWA y el proceso de verificación.
 
 ## Base de datos local
 
@@ -150,7 +207,7 @@ debe usar credenciales reales mediante variables de entorno.
 
 ## Principios de arquitectura
 
-- La UI, el acceso a datos y la integración con IA tendrán límites claros.
+- La UI, el acceso a datos y la integración con IA tienen límites claros.
 - PostgreSQL será la fuente de verdad; Gemini solo interpretará y presentará.
 - Toda acción sugerida por IA será validada en el backend.
 - El MVP se mantendrá como una sola aplicación Next.js, sin microservicios.
@@ -172,3 +229,31 @@ npm run ai:verify:live -- "Mañana revisar mi tesis"
 
 La prueba en vivo consume cuota. `npm run ai:verify` usa un proveedor simulado y
 siempre puede ejecutarse sin clave.
+
+## PWA y funcionamiento sin conexión
+
+El manifiesto y el service worker permiten instalar la aplicación desde un
+navegador compatible. Por privacidad, solo se guardan el manifiesto, el icono y
+la página genérica `/offline`; las rutas personales (`/`, `/chat`, `/projects`,
+etc.) siempre usan la red y nunca se persisten en la caché PWA. Sin conexión se
+muestra una pantalla segura, no una copia potencialmente desactualizada de tus
+datos.
+
+## Límites conocidos del MVP
+
+- No existe autenticación ni acceso remoto seguro.
+- La búsqueda de archivos es textual; la arquitectura queda preparada para RAG,
+  pero todavía no usa embeddings.
+- No hay sincronización con calendario ni recordatorios en segundo plano.
+- El modo offline informa la falta de conexión, pero no permite editar datos.
+- La IA depende de la disponibilidad y cuota de la cuenta de Gemini configurada.
+
+## Problemas frecuentes
+
+- Si PostgreSQL no responde, abre Docker Desktop y ejecuta `npm run db:up`.
+- Si una migración está pendiente, revisa `npm run db:status` y luego ejecuta
+  `npm run db:migrate`.
+- Si falta el cliente de Prisma, ejecuta `npm run db:generate`.
+- Si Gemini rechaza una solicitud, verifica la clave y el modelo en `.env`; los
+  datos existentes continúan disponibles aunque la IA esté temporalmente caída.
+- `npm run db:stop` detiene PostgreSQL sin borrar el volumen ni tus datos.
