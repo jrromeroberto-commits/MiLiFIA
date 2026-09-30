@@ -67,9 +67,9 @@ export function Navigation() {
         </nav>
 
         <div className="mt-auto rounded-2xl border border-violet-100 bg-violet-50/70 p-4">
-          <p className="text-xs font-semibold text-violet-900">Fase 12 · Crecimiento</p>
+          <p className="text-xs font-semibold text-violet-900">Fase 13 · Archivos</p>
           <p className="mt-1 text-xs leading-5 text-violet-700/70">
-            Hábitos, metas y progreso calculados desde tus datos reales.
+            Documentos por proyecto y búsquedas con coincidencias verificables.
           </p>
         </div>
       </aside>
@@ -82,7 +82,7 @@ export function Navigation() {
           <span className="font-semibold tracking-[-0.03em] text-slate-950">LifeOS</span>
         </Link>
         <span className="rounded-full bg-white/80 px-3 py-1.5 text-xs font-medium text-slate-500 shadow-sm">
-          Fase 12
+          Fase 13
         </span>
       </header>
 

@@ -67,12 +67,17 @@ enum GoalStatus {
   CANCELLED
 }
 
+enum FileProcessingStatus {
+  READY
+  NO_TEXT
+}
+
 model User {
-  id         String      @id @default(uuid()) @db.Uuid
-  name       String      @db.VarChar(120)
-  email      String      @unique @db.VarChar(320)
-  createdAt  DateTime    @default(now()) @db.Timestamptz(3)
-  updatedAt  DateTime    @updatedAt @db.Timestamptz(3)
+  id         String             @id @default(uuid()) @db.Uuid
+  name       String             @db.VarChar(120)
+  email      String             @unique @db.VarChar(320)
+  createdAt  DateTime           @default(now()) @db.Timestamptz(3)
+  updatedAt  DateTime           @updatedAt @db.Timestamptz(3)
   projects   Project[]
   tasks      Task[]
   ideas      Idea[]
@@ -82,6 +87,8 @@ model User {
   habitLogs  HabitLog[]
   goals      Goal[]
   inboxItems InboxItem[]
+  files      ProjectFile[]
+  fileChunks ProjectFileChunk[]
 }
 
 model Project {
@@ -98,9 +105,49 @@ model Project {
   ideas       Idea[]
   notes       Note[]
   expenses    Expense[]
+  files       ProjectFile[]
 
   @@unique([userId, name])
   @@index([userId, status])
+}
+
+model ProjectFile {
+  id               String               @id @default(uuid()) @db.Uuid
+  userId           String               @db.Uuid
+  projectId        String               @db.Uuid
+  originalName     String               @db.VarChar(255)
+  mimeType         String               @db.VarChar(120)
+  size             Int
+  sha256           String               @db.Char(64)
+  data             Bytes                @db.ByteA
+  extractedText    String?              @db.Text
+  processingStatus FileProcessingStatus
+  textTruncated    Boolean              @default(false)
+  pageCount        Int?
+  createdAt        DateTime             @default(now()) @db.Timestamptz(3)
+  updatedAt        DateTime             @updatedAt @db.Timestamptz(3)
+  user             User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project          Project              @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  chunks           ProjectFileChunk[]
+
+  @@unique([projectId, sha256])
+  @@index([userId, createdAt])
+  @@index([projectId, createdAt])
+}
+
+model ProjectFileChunk {
+  id          String      @id @default(uuid()) @db.Uuid
+  userId      String      @db.Uuid
+  fileId      String      @db.Uuid
+  chunkIndex  Int
+  content     String      @db.Text
+  contentHash String      @db.Char(64)
+  createdAt   DateTime    @default(now()) @db.Timestamptz(3)
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  file        ProjectFile @relation(fields: [fileId], references: [id], onDelete: Cascade)
+
+  @@unique([fileId, chunkIndex])
+  @@index([userId, fileId])
 }
 
 model Task {

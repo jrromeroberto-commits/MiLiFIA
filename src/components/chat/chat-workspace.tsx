@@ -32,6 +32,7 @@ const suggestions = [
   "Quiero estudiar inglés cuatro veces por semana",
   "Hoy caminé 40 minutos",
   "Mi meta es terminar LifeOS este mes",
+  "¿Dónde está el documento relacionado con GLPI Cloud?",
 ];
 
 const intentLabels: Record<string, string> = {
@@ -49,6 +50,7 @@ const intentLabels: Record<string, string> = {
   log_habit: "Registrar hábito",
   create_goal: "Crear meta",
   complete_task: "Completar tarea",
+  search_files: "Buscar archivos",
   unknown: "Necesita contexto",
 };
 
@@ -261,15 +263,27 @@ function ChatBubble({ message }: { message: ChatMessage }) {
             {response.items.map((item, index) => (
               <li key={`${item.label}-${index}`}>
                 {item.href ? (
-                  <Link
-                    className="block rounded-lg bg-slate-50 px-3 py-2 transition hover:bg-violet-50"
-                    href={item.href}
-                  >
+                  item.href.startsWith("/files/") ? (
+                    <a
+                      className="block rounded-lg bg-slate-50 px-3 py-2 transition hover:bg-violet-50"
+                      href={item.href}
+                    >
+                      <span className="block font-semibold text-slate-800">{item.label}</span>
+                      {item.detail ? (
+                        <span className="block text-xs text-slate-500">{item.detail}</span>
+                      ) : null}
+                    </a>
+                  ) : (
+                    <Link
+                      className="block rounded-lg bg-slate-50 px-3 py-2 transition hover:bg-violet-50"
+                      href={item.href}
+                    >
                     <span className="block font-semibold text-slate-800">{item.label}</span>
                     {item.detail ? (
                       <span className="block text-xs text-slate-500">{item.detail}</span>
                     ) : null}
-                  </Link>
+                    </Link>
+                  )
                 ) : (
                   <div className="rounded-lg bg-slate-50 px-3 py-2">
                     <span className="block font-semibold text-slate-800">{item.label}</span>

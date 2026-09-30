@@ -35,6 +35,7 @@ const emptyResponse = {
   habitDate: null,
   goalTitle: null,
   goalTargetDate: null,
+  fileQuery: null,
   clarificationQuestion: null,
 };
 
@@ -175,6 +176,14 @@ const fixtures = [
   {
     response: {
       ...emptyResponse,
+      intent: "search_files",
+      fileQuery: "GLPI Cloud",
+    },
+    intent: "search_files",
+  },
+  {
+    response: {
+      ...emptyResponse,
       intent: "unknown",
       clarificationQuestion: "¿Qué quieres guardar o consultar en LifeOS?",
     },
@@ -241,5 +250,5 @@ assert.throws(
 );
 
 console.log(
-  "Capa de IA verificada: 15 intents válidos y respuestas inseguras rechazadas.",
+  "Capa de IA verificada: 16 intents válidos y respuestas inseguras rechazadas.",
 );

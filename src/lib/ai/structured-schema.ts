@@ -19,6 +19,7 @@ export const lifeOSIntentJsonSchema = {
         "log_habit",
         "create_goal",
         "complete_task",
+        "search_files",
         "unknown",
       ],
       description: "La única intención principal expresada por el usuario.",
@@ -151,6 +152,11 @@ export const lifeOSIntentJsonSchema = {
       format: "date",
       description: "Fecha objetivo YYYY-MM-DD; null si no se indicó ningún plazo.",
     },
+    fileQuery: {
+      type: ["string", "null"],
+      description:
+        "Palabras para localizar en nombres o contenido de archivos; no inventes contenido.",
+    },
     clarificationQuestion: {
       type: ["string", "null"],
       description:
@@ -183,6 +189,7 @@ export const lifeOSIntentJsonSchema = {
     "habitDate",
     "goalTitle",
     "goalTargetDate",
+    "fileQuery",
     "clarificationQuestion",
   ],
 } as const;

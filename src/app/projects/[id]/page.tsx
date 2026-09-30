@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ZodError } from "zod";
 import { ProjectActivity, type ActivityItem } from "@/components/projects/project-activity";
 import { ProjectEditForm } from "@/components/projects/project-edit-form";
+import { ProjectFileSection } from "@/components/projects/project-file-section";
 import {
   ProjectIdeaSection,
   ProjectNoteSection,
@@ -60,10 +61,11 @@ export default async function ProjectDetailPage({
         </div>
       </header>
 
-      <section className="grid gap-4 sm:grid-cols-3" aria-label="Resumen del proyecto">
+      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4" aria-label="Resumen del proyecto">
         <ProjectMetric value={openTasks} label="Tareas abiertas" color="bg-violet-500" />
         <ProjectMetric value={project.notes.length} label="Notas" color="bg-sky-500" />
         <ProjectMetric value={project.ideas.length} label="Ideas" color="bg-amber-400" />
+        <ProjectMetric value={project.files.length} label="Archivos" color="bg-emerald-500" />
       </section>
 
       <div className="grid items-start gap-6 xl:grid-cols-[1.4fr_0.6fr]">
@@ -98,6 +100,8 @@ export default async function ProjectDetailPage({
         <ProjectIdeaSection projectId={project.id} ideas={project.ideas} />
         <ProjectNoteSection projectId={project.id} notes={project.notes} />
       </div>
+
+      <ProjectFileSection projectId={project.id} files={project.files} />
     </div>
   );
 }
@@ -145,6 +149,13 @@ function buildActivity(
       detail: note.title ?? "Nota sin título",
       at: note.createdAt,
       color: "bg-sky-500",
+    })),
+    ...project.files.map((file) => ({
+      id: `file-${file.id}`,
+      title: "Archivo agregado",
+      detail: file.originalName,
+      at: file.createdAt,
+      color: "bg-emerald-500",
     })),
   ]
     .sort((a, b) => b.at.getTime() - a.at.getTime())

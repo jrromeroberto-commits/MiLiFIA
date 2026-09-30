@@ -18,6 +18,20 @@ export const projectRepository = {
         tasks: { orderBy: [{ status: "asc" }, { dueDate: "asc" }] },
         ideas: { orderBy: { updatedAt: "desc" } },
         notes: { orderBy: { updatedAt: "desc" } },
+        files: {
+          orderBy: { createdAt: "desc" },
+          select: {
+            id: true,
+            originalName: true,
+            mimeType: true,
+            size: true,
+            processingStatus: true,
+            textTruncated: true,
+            pageCount: true,
+            createdAt: true,
+            _count: { select: { chunks: true } },
+          },
+        },
       },
     });
   },
@@ -26,7 +40,7 @@ export const projectRepository = {
     return db.project.findMany({
       where: { userId },
       include: {
-        _count: { select: { tasks: true, ideas: true, notes: true } },
+        _count: { select: { tasks: true, ideas: true, notes: true, files: true } },
       },
       orderBy: [{ status: "asc" }, { updatedAt: "desc" }],
     });

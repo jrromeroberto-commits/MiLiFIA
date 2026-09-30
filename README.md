@@ -12,7 +12,8 @@ El chat también registra y resume gastos personales en soles con precisión dec
 La Fase 10 añade captura visual de pizarras, apuntes, pantallas y listas. La
 Fase 11 permite grabar o subir audio, revisar su transcripción y confirmar cada
 acción antes de guardar. La Fase 12 incorpora hábitos, metas y estadísticas
-semanales calculadas por el backend.
+semanales calculadas por el backend. La Fase 13 agrega archivos por proyecto y
+búsqueda textual con citas verificables, preparada para RAG futuro.
 
 ## Ejecutar el proyecto
 
@@ -44,6 +45,7 @@ npm run expenses:verify
 npm run images:verify
 npm run audio:verify
 npm run growth:verify
+npm run files:verify
 ```
 
 ## Mapa rápido
@@ -58,6 +60,7 @@ src/
 │   ├── inbox/page.tsx      Lista real de InboxItems
 │   ├── review/              Revisión diaria y semanal
 │   ├── growth/page.tsx     Hábitos, metas y progreso semanal
+│   ├── files/[id]/         Descarga privada de archivos
 │   ├── actions/            Mutaciones seguras, incluido el chat
 │   ├── layout.tsx          Layout raíz y metadatos
 │   ├── manifest.ts         Manifiesto instalable PWA
@@ -75,6 +78,7 @@ src/
 │   ├── ai/                 Gemini, intents y extracción de texto e imágenes
 │   ├── db/                 Cliente y repositorios de PostgreSQL
 │   ├── time/               Reglas de calendario en America/Lima
+│   ├── files/              Extracción y fragmentación de documentos
 │   └── validation/         Contratos de entrada con Zod
 └── services/               Negocio, consultas, gastos, crecimiento y aislamiento
 prisma/
@@ -93,7 +97,8 @@ scripts/
 ├── verify-expenses.ts      Importes decimales, categorías y totales SQL
 ├── verify-image-capture.ts Imagen multimodal, firmas y contrato seguro
 ├── verify-audio-capture.ts Audio multimodal, transcripción y formatos
-└── verify-growth.ts        Hábitos, metas y estadísticas autolimpiables
+├── verify-growth.ts        Hábitos, metas y estadísticas autolimpiables
+└── verify-files.ts         Archivos, búsqueda, citas y aislamiento
 public/
 └── sw.js                   Service worker básico
 docs/
@@ -122,7 +127,9 @@ la entrada multimodal de Gemini y la confirmación antes de persistir. La
 [Fase 11](docs/learning/phase-11-audio.md) explica la grabación adaptable, la
 validación de audios y la revisión de la transcripción. La
 [Fase 12](docs/learning/phase-12-growth.md) documenta los modelos de crecimiento,
-las nuevas intenciones y las estadísticas calculadas en el backend.
+las nuevas intenciones y las estadísticas calculadas en el backend. La
+[Fase 13](docs/learning/phase-13-project-files.md) explica el almacenamiento,
+la extracción local, los fragmentos y la búsqueda sin respuestas inventadas.
 
 ## Base de datos local
 

@@ -16,6 +16,7 @@ export const lifeOSIntentNameSchema = z.enum([
   "log_habit",
   "create_goal",
   "complete_task",
+  "search_files",
   "unknown",
 ]);
 
@@ -85,6 +86,7 @@ export const rawIntentResponseSchema = z
     habitDate: isoDateSchema.nullable(),
     goalTitle: z.string().trim().min(1).max(240).nullable(),
     goalTargetDate: isoDateSchema.nullable(),
+    fileQuery: z.string().trim().min(2).max(200).nullable(),
     clarificationQuestion: clarificationQuestionSchema,
   })
   .strict();
@@ -255,6 +257,15 @@ const completeTaskIntentSchema = z
   })
   .strict();
 
+const searchFilesIntentSchema = z
+  .object({
+    intent: z.literal("search_files"),
+    fileQuery: z.string().trim().min(2).max(200),
+    projectName: nullableProjectNameSchema,
+    clarificationQuestion: clarificationQuestionSchema,
+  })
+  .strict();
+
 const unknownIntentSchema = z
   .object({
     intent: z.literal("unknown"),
@@ -277,6 +288,7 @@ export const lifeOSIntentSchema = z.discriminatedUnion("intent", [
   logHabitIntentSchema,
   createGoalIntentSchema,
   completeTaskIntentSchema,
+  searchFilesIntentSchema,
   unknownIntentSchema,
 ]);
 
@@ -395,6 +407,13 @@ export function toLifeOSIntent(raw: RawIntentResponse): LifeOSIntent {
       return lifeOSIntentSchema.parse({
         intent: raw.intent,
         title: raw.title,
+        projectName: raw.projectName,
+        clarificationQuestion: raw.clarificationQuestion,
+      });
+    case "search_files":
+      return lifeOSIntentSchema.parse({
+        intent: raw.intent,
+        fileQuery: raw.fileQuery,
         projectName: raw.projectName,
         clarificationQuestion: raw.clarificationQuestion,
       });

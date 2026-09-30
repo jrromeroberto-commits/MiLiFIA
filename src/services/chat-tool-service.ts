@@ -12,6 +12,7 @@ import { executeExpenseIntent } from "@/services/expense-tool-service";
 import { executeGrowthIntent } from "@/services/growth-tool-service";
 import { executeIntelligentQuery } from "@/services/intelligent-query-tool-service";
 import { createNote } from "@/services/note-service";
+import { searchProjectFiles } from "@/services/file-search-service";
 import { createProject, listProjects } from "@/services/project-service";
 import {
   normalizeLifeOSName,
@@ -372,6 +373,45 @@ async function executeCompleteTask(
   });
 }
 
+async function executeSearchFiles(
+  userId: string,
+  intent: Extract<LifeOSIntent, { intent: "search_files" }>,
+) {
+  const projectResolution = await resolveProject(
+    userId,
+    intent.projectName,
+    intent.intent,
+  );
+  if (projectResolution.status === "clarification") return projectResolution.result;
+  const project = projectResolution.status === "found" ? projectResolution.project : null;
+  const matches = await searchProjectFiles(userId, {
+    query: intent.fileQuery,
+    projectId: project?.id,
+  });
+
+  if (!matches.length) {
+    return intentResult(intent.intent, {
+      outcome: "answer",
+      reply: `No encontré archivos que coincidan con “${intent.fileQuery}”${project ? ` en ${project.name}` : ""}.`,
+      items: [],
+      mutated: false,
+    });
+  }
+
+  return intentResult(intent.intent, {
+    outcome: "answer",
+    reply: `Encontré ${matches.length} ${matches.length === 1 ? "archivo" : "archivos"} con coincidencias reales. Abre el resultado para verificar el documento completo.`,
+    items: matches.map((file) => ({
+      label: file.originalName,
+      detail: file.excerpt
+        ? `${file.project.name} · “${file.excerpt}”`
+        : `${file.project.name} · coincidencia en el nombre`,
+      href: `/files/${file.id}/download`,
+    })),
+    mutated: false,
+  });
+}
+
 export async function executeLifeOSIntent(userId: string, intent: LifeOSIntent) {
   if (intent.clarificationQuestion) {
     return intentResult(intent.intent, {
@@ -409,6 +449,8 @@ export async function executeLifeOSIntent(userId: string, intent: LifeOSIntent) 
       return executeGrowthIntent(userId, intent);
     case "complete_task":
       return executeCompleteTask(userId, intent);
+    case "search_files":
+      return executeSearchFiles(userId, intent);
     case "unknown":
       return intentResult(intent.intent, {
         outcome: "clarification",
